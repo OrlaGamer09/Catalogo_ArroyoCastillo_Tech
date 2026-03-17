@@ -36,11 +36,6 @@ export default function CatalogPage() {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full mb-6">
-                <Zap className="h-4 w-4 text-accent" />
-                <span className="text-sm font-medium text-accent">Arroyo Castillo Technology</span>
-              </div>
-              
               <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground leading-[1.1] text-balance mb-6">
                 Potencia tu
                 <span className="block text-primary mt-1">productividad</span>
@@ -101,12 +96,12 @@ export default function CatalogPage() {
                   </div>
                 </div>
                 <div className="space-y-4 pt-8">
-                  <div className="bg-primary rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-primary-foreground/20 rounded-xl flex items-center justify-center mb-4">
-                      <MessageCircle className="h-6 w-6 text-primary-foreground" />
+                  <div className="bg-card rounded-2xl p-6 shadow-lg border border-border/50 hover:shadow-xl transition-shadow">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                      <MessageCircle className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-primary-foreground mb-2">Atencion Directa</h3>
-                    <p className="text-sm text-primary-foreground/80">Consulta por WhatsApp</p>
+                    <h3 className="font-semibold text-foreground mb-2">Atencion Directa</h3>
+                    <p className="text-sm text-muted-foreground">Consulta por WhatsApp</p>
                   </div>
                   <div className="bg-card rounded-2xl p-6 shadow-lg border border-border/50 hover:shadow-xl transition-shadow">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
