@@ -41,7 +41,7 @@ export default function CatalogPage() {
               <span className="block text-primary">para tu vida</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed mb-8">
-              Descubre nuestra selección curada de productos tecnológicos. Consulta disponibilidad 
+              Descubre nuestra selección curada de productos tecnológicos. Consulta disponibilidad
               y precios directamente por WhatsApp con un solo clic.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -106,8 +106,8 @@ export default function CatalogPage() {
                 <p className="text-xs text-muted-foreground">Arroyo Castillo Technology</p>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={contactStore}
               className="group flex items-center gap-2 text-sm font-medium text-foreground hover:text-accent transition-colors"
             >
@@ -118,7 +118,7 @@ export default function CatalogPage() {
 
           <div className="mt-8 pt-8 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">
-              © 2024 Arroyo-Castillo SAS. Todos los derechos reservados.
+              © 2026 Arroyo-Castillo SAS. Todos los derechos reservados.
             </p>
           </div>
         </div>
