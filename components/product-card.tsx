@@ -17,8 +17,9 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const shareOnWhatsApp = () => {
-    const message = `¡Mira este producto! 🔥\n\n*${product.name}*\n${product.description}\n\n💰 Precio: $${product.price.toLocaleString()}\n\nConsúltalo en nuestro catálogo`
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
+    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""
+    const message = `Hola, estoy interesado en este producto de *AC Tech*:\n\n*${product.name}*\n${product.description}\n\nPrecio: $${product.price.toLocaleString()}\n\n¿Está disponible?`
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 

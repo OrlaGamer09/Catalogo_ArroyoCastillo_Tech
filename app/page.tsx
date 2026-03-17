@@ -128,16 +128,16 @@ export default function CatalogPage() {
       <section className="relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <div className="text-center max-w-3xl mx-auto">
-            <p className="text-sm font-medium tracking-widest uppercase text-muted-foreground mb-4">
-              Colección 2024
+            <p className="text-sm font-medium tracking-widest uppercase text-accent mb-4">
+              Arroyo Castillo Technology
             </p>
             <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-medium text-foreground leading-tight text-balance mb-6">
-              Tecnología que inspira
-              <span className="block">excelencia</span>
+              Tecnología premium
+              <span className="block text-primary">para tu vida</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Descubre nuestra selección curada de productos premium. Comparte tus favoritos 
-              directamente por WhatsApp con un solo clic.
+              Descubre nuestra selección curada de productos tecnológicos. Consulta disponibilidad 
+              y precios directamente por WhatsApp con un solo clic.
             </p>
           </div>
         </div>
@@ -184,17 +184,17 @@ export default function CatalogPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-serif font-bold text-lg">T</span>
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center border-2 border-accent">
+                <span className="text-primary-foreground font-serif font-bold text-sm">AC</span>
               </div>
               <div>
-                <p className="font-serif text-lg font-semibold text-foreground">TechVault</p>
-                <p className="text-xs text-muted-foreground">Premium Tech</p>
+                <p className="font-serif text-lg font-semibold text-foreground">AC Tech</p>
+                <p className="text-xs text-muted-foreground">Arroyo Castillo Technology</p>
               </div>
             </div>
             
             <button 
-              onClick={() => window.open("https://wa.me/", "_blank")}
+              onClick={() => window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""}`, "_blank")}
               className="group flex items-center gap-2 text-sm font-medium text-foreground hover:text-accent transition-colors"
             >
               Contáctanos por WhatsApp
@@ -204,7 +204,7 @@ export default function CatalogPage() {
 
           <div className="mt-8 pt-8 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">
-              © 2024 TechVault. Todos los derechos reservados.
+              © 2024 Arroyo-Castillo SAS. Todos los derechos reservados.
             </p>
           </div>
         </div>

@@ -19,15 +19,15 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-serif font-bold text-lg">T</span>
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center border-2 border-accent">
+              <span className="text-primary-foreground font-serif font-bold text-lg">AC</span>
             </div>
             <div>
               <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">
-                TechVault
+                AC Tech
               </h1>
               <p className="text-xs text-muted-foreground tracking-widest uppercase">
-                Premium Tech
+                Arroyo Castillo Technology
               </p>
             </div>
           </div>
@@ -51,7 +51,7 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
             <Button 
               variant="outline" 
               className="rounded-full border-border hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-300"
-              onClick={() => window.open("https://wa.me/", "_blank")}
+              onClick={() => window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""}`, "_blank")}
             >
               Contactar
             </Button>
@@ -84,7 +84,7 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
             <Button 
               variant="outline" 
               className="w-full rounded-full"
-              onClick={() => window.open("https://wa.me/", "_blank")}
+              onClick={() => window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""}`, "_blank")}
             >
               Contactar por WhatsApp
             </Button>

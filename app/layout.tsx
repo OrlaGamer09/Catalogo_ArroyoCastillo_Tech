@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'TechVault | Catálogo de Tecnología Premium',
-  description: 'Descubre nuestra colección exclusiva de productos tecnológicos de alta gama',
+  title: 'AC Tech | Arroyo Castillo Technology',
+  description: 'Catálogo de productos tecnológicos premium - Arroyo-Castillo SAS',
   generator: 'v0.app',
   icons: {
     icon: [
