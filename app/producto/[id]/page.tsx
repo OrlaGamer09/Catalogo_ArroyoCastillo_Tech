@@ -159,9 +159,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               {product.specs.map((spec, index) => (
                 <div
                   key={index}
-                  className={`flex justify-between gap-4 px-6 py-4 ${
-                    index % 2 === 0 ? "bg-secondary/30" : ""
-                  } ${index < product.specs.length - 2 ? "border-b border-border" : ""}`}
+                  className={`flex justify-between gap-4 px-6 py-4 ${index % 2 === 0 ? "bg-secondary/30" : ""
+                    } ${index < product.specs.length - 2 ? "border-b border-border" : ""}`}
                 >
                   <span className="font-medium text-foreground">{spec.label}</span>
                   <span className="text-muted-foreground text-right">{spec.value}</span>
@@ -225,7 +224,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <span className="text-primary-foreground font-serif font-bold text-xs">AC</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                © 2024 Arroyo-Castillo SAS
+                © 2026 Arroyo-Castillo SAS
               </p>
             </div>
             <button
