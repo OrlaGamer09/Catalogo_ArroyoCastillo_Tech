@@ -75,6 +75,7 @@
 }
 
 @theme inline {
+  --font-poppins: var(--font-poppins), 'Poppins', sans-serif;
   --font-sans: var(--font-sans), 'Inter', sans-serif;
   --font-serif: var(--font-serif), 'Playfair Display', serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
@@ -122,5 +123,10 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Headings use Poppins */
+  h1, h2, h3, h4 {
+    font-family: var(--font-poppins);
   }
 }
