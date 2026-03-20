@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, Share2, MessageCircle, Check, ChevronRight } from "lucide-react"
+import ThemeToggle from '@/components/theme-toggle'
 import { Button } from "@/components/ui/button"
 import { getProductById, products } from "@/lib/products"
 
@@ -53,6 +54,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <Image src="/icon.png" alt="AC Tech Logo" fill className="object-contain bg-transparent" />
               </div>
               <span className="font-serif font-semibold text-foreground hidden sm:block">AC Tech</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
             </div>
           </div>
         </div>
