@@ -71,7 +71,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         <div className="p-6">
-          <h3 className="font-serif text-xl font-medium text-foreground leading-tight text-balance mb-3">
+          <h3 className="--font-poppins text-xl font-bold text-foreground leading-tight text-balance mb-3">
             {product.name}
           </h3>
 
@@ -80,7 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
 
           <div className="flex items-center justify-between pt-4 border-t border-border">
-            <span className="font-serif text-2xl font-semibold text-foreground">
+            <span className="--font-poppins text-xl font-semibold text-foreground">
               ${product.price.toLocaleString()}
             </span>
             <span className="text-xs text-muted-foreground tracking-wide uppercase">
