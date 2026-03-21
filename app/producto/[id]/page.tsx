@@ -211,7 +211,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <Image src="/icon.png" alt="AC Tech Logo" fill className="object-contain bg-transparent" />
               </div>
               <p className="text-sm text-muted-foreground">
-                © 2026 Arroyo-Castillo SAS
+                © 2026 Arroyo Castillo SAS
               </p>
             </div>
             <button
