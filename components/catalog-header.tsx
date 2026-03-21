@@ -22,7 +22,7 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
         <div className="flex items-center justify-between h-18 py-3">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12 flex-shrink-0">
+            <div className="relative w-12 h-12 shrink-0">
               <Image
                 src="/icon.png"
                 alt="AC Tech Logo"
