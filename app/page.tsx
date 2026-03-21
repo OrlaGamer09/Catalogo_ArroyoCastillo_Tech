@@ -36,14 +36,13 @@ export default function CatalogPage() {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left">
-              <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground leading-[1.1] text-balance mb-6">
+              <h2 className="--font-poppins text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground leading-[1.1] text-balance mb-6">
                 Potencia tu
                 <span className="block text-primary mt-1">productividad</span>
               </h2>
               
               <p className="text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed mb-8">
-                Accesorios tecnologicos de alta calidad para maximizar tu rendimiento. 
-                Cables, cargadores y perifericos premium.
+              Accesorios tecnológicos de alta calidad para maximizar tu rendimiento. Cables, cargadores y periféricos premium.
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
@@ -58,7 +57,7 @@ export default function CatalogPage() {
                   href="#catalogo"
                   className="inline-flex items-center gap-2 px-6 py-3.5 text-foreground font-medium hover:text-primary transition-colors group"
                 >
-                  Ver catalogo
+                  Ver catálogo
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </a>
               </div>
@@ -67,7 +66,7 @@ export default function CatalogPage() {
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-primary" />
-                  <span>Garantia incluida</span>
+                  <span>Garantía incluida</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4 text-primary" />
@@ -84,12 +83,12 @@ export default function CatalogPage() {
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                       <Zap className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-foreground mb-2">Carga Rapida</h3>
-                    <p className="text-sm text-muted-foreground">Tecnologia GaN hasta 100W</p>
+                    <h3 className="font-semibold text-foreground mb-2">Carga Rápida</h3>
+                    <p className="text-sm text-muted-foreground">Tecnología GaN hasta 100W</p>
                   </div>
                   <div className="bg-card rounded-2xl p-6 shadow-lg border border-border/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-4">
-                      <Shield className="h-6 w-6 text-accent" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                      <Shield className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Calidad Premium</h3>
                     <p className="text-sm text-muted-foreground">Productos certificados</p>
@@ -100,15 +99,15 @@ export default function CatalogPage() {
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                       <MessageCircle className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-foreground mb-2">Atencion Directa</h3>
+                    <h3 className="font-semibold text-foreground mb-2">Atención Directa</h3>
                     <p className="text-sm text-muted-foreground">Consulta por WhatsApp</p>
                   </div>
                   <div className="bg-card rounded-2xl p-6 shadow-lg border border-border/50 hover:shadow-xl transition-shadow">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                       <Truck className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-foreground mb-2">Envio Seguro</h3>
-                    <p className="text-sm text-muted-foreground">A todo el pais</p>
+                    <h3 className="font-semibold text-foreground mb-2">Envío Seguro</h3>
+                    <p className="text-sm text-muted-foreground">A todo el país</p>
                   </div>
                 </div>
               </div>
@@ -144,7 +143,7 @@ export default function CatalogPage() {
           </div>
         ) : (
           <div className="text-center py-24">
-            <p className="font-serif text-2xl text-foreground mb-2">
+            <p className="--font-poppins  text-2xl text-foreground mb-2">
               No encontramos productos
             </p>
             <p className="text-muted-foreground">
@@ -168,8 +167,8 @@ export default function CatalogPage() {
                 />
               </div>
               <div>
-                <p className="font-serif text-lg font-semibold text-foreground">AC Tech</p>
-                <p className="text-xs text-muted-foreground">Arroyo Castillo Technology</p>
+                <p className="--font-poppins text-lg font-bold text-foreground">AC TECH</p>
+                <p className="text-xs text-muted-foreground">ARROYO CASTILLO TECHNOLOGY</p>
               </div>
             </div>
 
@@ -184,7 +183,7 @@ export default function CatalogPage() {
 
           <div className="mt-8 pt-8 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">
-              © 2026 Arroyo-Castillo SAS. Todos los derechos reservados.
+              © 2026 Arroyo Castillo SAS. Todos los derechos reservados.
             </p>
           </div>
         </div>
