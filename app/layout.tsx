@@ -21,8 +21,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'AC Tech | Arroyo Castillo Technology',
-  description: 'Catálogo de productos tecnológicos premium - Arroyo-Castillo SAS',
+  title: 'AC TECH | ARROYO CASTILLO TECHNOLOGY',
+  description: 'Catálogo de productos tecnológicos premium - Arroyo Castillo SAS',
   generator: 'v0.app',
   icons: {
     icon: '/icon.png',
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${playfair.variable} ${inter.variable} ${poppins.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}
