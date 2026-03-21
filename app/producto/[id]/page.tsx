@@ -53,7 +53,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <div className="relative w-12 h-12 flex-shrink-0 rounded-full overflow-hidden">
                 <Image src="/icon.png" alt="AC Tech Logo" fill className="object-contain bg-transparent" />
               </div>
-              <span className="--font-poppins font-semibold text-foreground hidden sm:block">AC Tech</span>
+              <span className="--font-poppins font-semibold text-foreground hidden sm:block uppercase">AC Tech</span>
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
