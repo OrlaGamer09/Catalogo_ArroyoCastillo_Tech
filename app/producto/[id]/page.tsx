@@ -53,7 +53,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <div className="relative w-12 h-12 flex-shrink-0 rounded-full overflow-hidden">
                 <Image src="/icon.png" alt="AC Tech Logo" fill className="object-contain bg-transparent" />
               </div>
-              <span className="font-serif font-semibold text-foreground hidden sm:block">AC Tech</span>
+              <span className="--font-poppins font-semibold text-foreground hidden sm:block uppercase">AC Tech</span>
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
@@ -97,7 +97,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           {/* Info Section */}
           <div className="flex flex-col">
             <div className="mb-6">
-              <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-foreground mb-4 text-balance">
+              <h1 className="--font-poppins text-3xl sm:text-4xl font-semibold text-foreground mb-4 text-balance">
                 {product.name}
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
@@ -107,7 +107,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
             {/* Price */}
             <div className="flex items-baseline gap-3 mb-8 pb-8 border-b border-border">
-              <span className="font-serif text-4xl font-bold text-foreground">
+              <span className="--font-poppins text-4xl font-bold text-foreground">
                 ${product.price.toLocaleString()}
               </span>
               <span className="text-sm text-muted-foreground">IVA incluido</span>
@@ -133,29 +133,12 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 Compartir producto
               </Button>
             </div>
-
-            {/* Features */}
-            <div className="bg-secondary/50 rounded-xl p-6 mb-8">
-              <h3 className="font-serif text-lg font-semibold text-foreground mb-4">
-                Características destacadas
-              </h3>
-              <ul className="space-y-3">
-                {product.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <div className="mt-0.5 h-5 w-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                      <Check className="h-3 w-3 text-accent" />
-                    </div>
-                    <span className="text-muted-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
 
         {/* Specifications */}
         <section className="mt-12 lg:mt-16">
-          <h2 className="font-serif text-2xl font-semibold text-foreground mb-6">
+          <h2 className="--font-poppins text-2xl font-semibold text-foreground mb-6">
             Especificaciones técnicas
           </h2>
           <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -178,7 +161,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         {relatedProducts.length > 0 && (
           <section className="mt-16 lg:mt-24">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="font-serif text-2xl font-semibold text-foreground">
+              <h2 className="--font-poppins text-2xl font-semibold text-foreground">
                 Productos relacionados
               </h2>
               <Link
@@ -205,10 +188,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="font-medium text-foreground mb-1 line-clamp-1">
+                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">
                       {relatedProduct.name}
                     </h3>
-                    <p className="font-serif text-lg font-semibold text-foreground">
+                    <p className="--font-poppins text-m font-semibold text-foreground">
                       ${relatedProduct.price.toLocaleString()}
                     </p>
                   </div>
@@ -228,7 +211,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <Image src="/icon.png" alt="AC Tech Logo" fill className="object-contain bg-transparent" />
               </div>
               <p className="text-sm text-muted-foreground">
-                © 2026 Arroyo-Castillo SAS
+                © 2026 Arroyo Castillo SAS
               </p>
             </div>
             <button
