@@ -22,7 +22,7 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
         <div className="flex items-center justify-between h-18 py-3">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12 flex-shrink-0">
+            <div className="relative w-12 h-12 shrink-0">
               <Image
                 src="/icon.png"
                 alt="AC Tech Logo"
@@ -32,7 +32,7 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
               />
             </div>
             <div>
-              <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">
+              <h1 className="--font-poppins text-xl font-semibold text-foreground tracking-tight uppercase">
                 AC Tech
               </h1>
               <p className="text-[10px] text-muted-foreground tracking-wider uppercase">
@@ -47,7 +47,7 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
               <Search className={`absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-200 ${searchFocused ? 'text-primary' : 'text-muted-foreground'}`} />
               <Input
                 type="search"
-                placeholder="Buscar productos, categorias..."
+                placeholder="Buscar productos, categorías..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
