@@ -188,10 +188,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="font-medium text-foreground mb-1 line-clamp-1">
+                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">
                       {relatedProduct.name}
                     </h3>
-                    <p className="--font-poppins text-lg font-semibold text-foreground">
+                    <p className="--font-poppins text-m font-semibold text-foreground">
                       ${relatedProduct.price.toLocaleString()}
                     </p>
                   </div>
