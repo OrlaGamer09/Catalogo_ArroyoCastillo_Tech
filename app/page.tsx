@@ -70,7 +70,7 @@ export default function CatalogPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4 text-primary" />
-                  <span>Envio nacional</span>
+                  <span>Envío nacional</span>
                 </div>
               </div>
             </div>
