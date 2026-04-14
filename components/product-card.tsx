@@ -79,6 +79,15 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.description}
           </p>
 
+          {/* Variant Badge */}
+          {product.variants && product.variants.length > 0 && (
+            <div className="mb-4 inline-block px-2 py-1 bg-accent/20 rounded-md">
+              <span className="text-xs font-medium text-accent-foreground">
+                {product.variants.length} tamaño{product.variants.length > 1 ? 's' : ''} disponible{product.variants.length > 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center justify-between pt-4 border-t border-border">
             <span className="--font-poppins text-xl font-semibold text-foreground">
               ${product.price.toLocaleString()}
