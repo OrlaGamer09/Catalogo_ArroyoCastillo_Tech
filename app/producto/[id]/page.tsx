@@ -1,6 +1,6 @@
 "use client"
 
-import { use } from "react"
+import { use, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -12,20 +12,36 @@ import { getProductById, products } from "@/lib/products"
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const product = getProductById(parseInt(id))
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0)
 
   if (!product) {
     notFound()
   }
 
+  // Get current price based on selected variant
+  const currentPrice = product.variants && product.variants.length > 0
+    ? product.variants[selectedVariantIndex]?.price || product.price
+    : product.price
+
+  const selectedVariant = product.variants ? product.variants[selectedVariantIndex] : null
+
   const shareProduct = () => {
-    const message = `Mira este producto de *AC Tech*:\n\n*${product.name}*\n${product.description}\n\nPrecio: $${product.price.toLocaleString()}\n\nConsultalo aqui: ${typeof window !== "undefined" ? window.location.href : ""}`
+    let message = `Mira este producto de *AC Tech*:\n\n*${product.name}`
+    if (selectedVariant) {
+      message += ` (${selectedVariant.size})`
+    }
+    message += `*\n${product.description}\n\nPrecio: $${currentPrice.toLocaleString()}\n\nConsultalo aqui: ${typeof window !== "undefined" ? window.location.href : ""}`
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 
   const contactStore = () => {
     const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""
-    const message = `Hola, estoy interesado en este producto de *AC Tech*:\n\n*${product.name}*\n${product.description}\n\nPrecio: $${product.price.toLocaleString()}\n\n¿Está disponible?`
+    let message = `Hola, estoy interesado en este producto de *AC Tech*:\n\n*${product.name}`
+    if (selectedVariant) {
+      message += ` (${selectedVariant.size})`
+    }
+    message += `*\n${product.description}\n\nPrecio: $${currentPrice.toLocaleString()}\n\n¿Está disponible?`
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
@@ -108,10 +124,40 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             {/* Price */}
             <div className="flex items-baseline gap-3 mb-8 pb-8 border-b border-border">
               <span className="--font-poppins text-4xl font-bold text-foreground">
-                ${product.price.toLocaleString()}
+                ${currentPrice.toLocaleString()}
               </span>
               <span className="text-sm text-muted-foreground">IVA incluido</span>
             </div>
+
+            {/* Variants Selector */}
+            {product.variants && product.variants.length > 0 && (
+              <div className="mb-8 pb-8 border-b border-border">
+                <label className="block text-sm font-medium text-foreground mb-4">
+                  Selecciona el tamaño:
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {product.variants.map((variant, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedVariantIndex(index)}
+                      className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 ${
+                        selectedVariantIndex === index
+                          ? "bg-primary text-primary-foreground shadow-lg"
+                          : "bg-secondary text-foreground border border-border hover:border-primary hover:shadow-md"
+                      }`}
+                    >
+                      {variant.size}
+                      {selectedVariantIndex === index && (
+                        <Check className="h-4 w-4" />
+                      )}
+                      <span className="text-sm opacity-75">
+                        ${variant.price.toLocaleString()}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mb-8">
