@@ -101,8 +101,45 @@ export const products: Product[] = [
     "Ideal para viajes largos, trabajo en carretera y uso diario"
   ]
 },
+
 {
-  id: 4,
+  id: 4, 
+  name: "Cargador UGREEN 65W GaN 3 Puertos (2C + 1A)",
+  price: 120000, 
+  category: "Cargadores",
+  image: "/cargador65w.png", 
+  description: "Cargador GaN de 65W con 2x USB-C y 1x USB-A. Soporta PD 3.0, QC 4.0, PPS y más. Carga hasta 3 dispositivos Apple o Android simultáneamente.",
+  fullDescription: "El UGREEN CD244 de 65W es un cargador GaN compacto diseñado para quienes necesitan cargar múltiples dispositivos a la vez sin cargar un ladrillo en la maleta. Con solo 128g y un diseño un 50% más pequeño que cargadores tradicionales, entrega hasta 65W por USB-C para cargar un MacBook Air, iPad Pro o iPhone al mismo tiempo. Su gestión inteligente de energía distribuye la potencia óptima según los dispositivos conectados, soportando los principales protocolos: PD 3.0/2.0, QC 4.0/3.0/2.0, PPS, AFC, FCP, SCP y más. Carcasa ignífuga y enchufe americano estándar.",
+  specs: [
+    { label: "Modelo", value: "UGREEN CD244" },
+    { label: "Potencia total", value: "65W" },
+    { label: "Tecnología", value: "GaN (Nitruro de Galio)" },
+    { label: "Puertos", value: "2x USB-C + 1x USB-A" },
+    { label: "USB-C solo (C1 o C2)", value: "65W máx. (5V/3A, 9V/3A, 12V/3A, 15V/3A, 20V/3.25A)" },
+    { label: "USB-C1 + USB-C2", value: "45W + 20W (65W total)" },
+    { label: "USB-C1 + USB-A", value: "45W + 18W QC (63W total)" },
+    { label: "USB-C1 + C2 + USB-A", value: "45W + 5V/1.7A + 5V/1.7A" },
+    { label: "Protocolos", value: "PPS, PD 3.0/2.0, QC 4+/4.0/3.0/2.0, AFC, FCP, SCP, SFCP, PE2.0/1.1, BC1.2" },
+    { label: "Voltaje de entrada", value: "100–240V ~ 50/60Hz (universal)" },
+    { label: "Dimensiones", value: "40 × 31 × 66.8 mm" },
+    { label: "Peso", value: "128g" },
+    { label: "Material carcasa", value: "Ignífuga" },
+    { label: "Color", value: "Blanco" },
+  ],
+  features: [
+    "65W por un solo puerto USB-C: carga MacBook Air, iPad Pro y portátiles Android",
+    "Gestión inteligente de potencia: distribuye energía óptima según dispositivos conectados",
+    "Soporta PD 3.0, QC 4.0, PPS, AFC, FCP, SCP — compatible con casi cualquier dispositivo",
+    "50% más compacto que cargadores tradicionales de la misma potencia",
+    "Carga iPhone al 50% en 30 minutos",
+    "Diseñado para el ecosistema Apple: MacBook Air, iPad Pro, iPhone, AirPods, Apple Watch",
+    "Carcasa ignífuga para mayor seguridad durante cargas prolongadas",
+    "Compatible con 100–240V: funciona en cualquier país"
+  ]
+},
+
+{
+  id: 5,
   name: "Cable UGREEN USB-C a USB-C Trenzado 60W PD",
   price: 30000,
   category: "Cables",
@@ -133,7 +170,7 @@ export const products: Product[] = [
   ]
 },
 {
-  id: 5,
+  id: 6,
   name: "Cable UGREEN USB-C a Lightning MFi Certificado Trenzado 1M",
   price: 70000,
   category: "Cables",
@@ -162,7 +199,7 @@ export const products: Product[] = [
   ]
 },
 {
-  id: 6,
+  id: 7,
   name: "Cable UGREEN UNO USB-C a USB-C 100W con Pantalla LED",
   price: 50000,
   category: "Cables",
@@ -192,7 +229,7 @@ export const products: Product[] = [
 },
   
 {
-  id: 7,
+  id: 8,
   name: "Mouse Vertical Ergonómico UGREEN Inalámbrico 2.4GHz 4000 DPI",
   price: 80000,
   category: "Periféricos",
@@ -224,7 +261,7 @@ export const products: Product[] = [
 },
 
 {
-  id: 8,
+  id: 9,
   name: "Soporte de Carro para Celular TOPK D40-C 360°",
   price: 45000,
   category: "Accesorios",
