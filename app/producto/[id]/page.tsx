@@ -97,7 +97,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
           {/* Image Section */}
           <div className="space-y-4">
-            <div className="aspect-square relative overflow-hidden rounded-2xl bg-secondary border border-border">
+            <div className="relative overflow-hidden rounded-2xl bg-secondary border border-border" style={{ aspectRatio: "4/3" }}>
               <Image
                 src={product.image}
                 alt={product.name}
@@ -114,17 +114,17 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           {/* Info Section */}
           <div className="flex flex-col">
             <div className="mb-6">
-              <h1 className="--font-poppins text-3xl sm:text-4xl font-semibold text-foreground mb-4 text-balance">
+              <h1 className="--font-poppins text-3xl sm:text-3xl font-semibold text-foreground mb-4 text-balance">
                 {product.name}
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <p className="text-l text-muted-foreground leading-relaxed">
                 {product.fullDescription}
               </p>
             </div>
 
             {/* Price */}
-            <div className="flex items-baseline gap-3 mb-8 pb-8 border-b border-border">
-              <span className="--font-poppins text-4xl font-bold text-foreground">
+            <div className={`flex items-baseline gap-3 pb-6 border-b border-border ${product.variants && product.variants.length > 0 ? "mb-8" : "mb-6"}`}>
+              <span className="--font-poppins text-3xl font-bold text-foreground">
                 ${currentPrice.toLocaleString()}
               </span>
               <span className="text-sm text-muted-foreground">IVA incluido</span>
@@ -165,7 +165,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <Button
                 onClick={contactStore}
                 size="lg"
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground gap-2 h-14 text-base"
+                className="w-full sm:flex-1 bg-primary hover:bg-primary/90 text-primary-foreground gap-2 h-11 text-base"
               >
                 <MessageCircle className="h-5 w-5" />
                 Consultar disponibilidad
@@ -174,7 +174,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 onClick={shareProduct}
                 variant="outline"
                 size="lg"
-                className="flex-1 gap-2 h-14 text-base border-2"
+                className="w-full sm:flex-1 gap-2 h-11 text-base border-2 hover:bg-secondary hover:text-foreground"
               >
                 <Share2 className="h-5 w-5" />
                 Compartir producto
@@ -196,8 +196,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   className={`flex justify-between gap-4 px-6 py-4 ${index % 2 === 0 ? "bg-secondary/30" : ""
                     } ${index < product.specs.length - 2 ? "border-b border-border" : ""}`}
                 >
-                  <span className="font-medium text-foreground">{spec.label}</span>
-                  <span className="text-muted-foreground text-right">{spec.value}</span>
+                  <span className="font-medium text-foreground text-md">{spec.label}</span>
+                  <span className="text-muted-foreground text-right text-md">{spec.value}</span>
                 </div>
               ))}
             </div>
@@ -254,24 +254,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
       {/* Footer */}
       <footer className="border-t border-border bg-secondary/50 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 flex-shrink-0 rounded-full overflow-hidden">
-                <Image src="/icon.png" alt="AC Tech Logo" fill className="object-contain bg-transparent" />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                © 2026 Arroyo Castillo SAS
-              </p>
-            </div>
-            <button
-              onClick={contactStore}
-              className="text-sm font-medium text-foreground hover:text-accent transition-colors flex items-center gap-2"
-            >
-              Contáctanos por WhatsApp
-              <MessageCircle className="h-4 w-4" />
-            </button>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            © 2026 Arroyo Castillo SAS. Todos los derechos reservados.
+          </p>
         </div>
       </footer>
     </div>

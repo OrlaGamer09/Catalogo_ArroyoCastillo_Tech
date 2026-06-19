@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import Image from "next/image"
 import { ProductCard } from "@/components/product-card"
 import { CatalogHeader } from "@/components/catalog-header"
 import { CategoryFilter } from "@/components/category-filter"
@@ -156,32 +155,7 @@ export default function CatalogPage() {
       {/* Footer */}
       <footer className="border-t border-border bg-secondary/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="relative w-11 h-11 flex-shrink-0">
-                <Image
-                  src="/icon.png"
-                  alt="AC Tech Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <div>
-                <p className="--font-poppins text-lg font-bold text-foreground">AC TECH</p>
-                <p className="text-xs text-muted-foreground">ARROYO CASTILLO TECHNOLOGY</p>
-              </div>
-            </div>
-
-            <button
-              onClick={contactStore}
-              className="group flex items-center gap-2 text-sm font-medium text-foreground hover:text-accent transition-colors"
-            >
-              Contáctanos por WhatsApp
-              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
-
-          <div className="mt-8 pt-8 border-t border-border text-center">
+          <div className="text-center">
             <p className="text-sm text-muted-foreground">
               © 2026 Arroyo Castillo SAS. Todos los derechos reservados.
             </p>

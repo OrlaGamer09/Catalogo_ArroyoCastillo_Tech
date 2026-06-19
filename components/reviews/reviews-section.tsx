@@ -129,7 +129,7 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
                     {myReview ? "Editar mi reseña" : "Escribir una reseña"}
                   </Button>
                 ) : (
-                  <Button className="w-full gap-2 bg-transparent" variant="outline" onClick={signIn}>
+                  <Button className="w-full gap-2 bg-transparent hover:bg-secondary hover:text-foreground" variant="outline" onClick={signIn}>
                     <GoogleIcon />
                     Inicia sesión para opinar
                   </Button>
@@ -198,7 +198,7 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
                 handleDelete()
               }}
               disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90"
             >
               {deleting ? "Eliminando..." : "Eliminar"}
             </AlertDialogAction>

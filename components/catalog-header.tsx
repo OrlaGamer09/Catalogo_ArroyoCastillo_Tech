@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Search, Menu, X, MessageCircle } from "lucide-react"
+import { Search, Menu, X } from "lucide-react"
 import ThemeToggle from "@/components/theme-toggle"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -65,16 +65,9 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
             </div>
           </div>
 
-          {/* Contact Button + Theme Toggle */}
+          {/* Theme Toggle */}
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
-            <Button 
-              className="rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-medium px-5 h-11 shadow-sm hover:shadow-md transition-all duration-300 gap-2"
-              onClick={() => window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""}`, "_blank")}
-            >
-              <MessageCircle className="h-4 w-4" />
-              Contactar
-            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -109,13 +102,6 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
                 </button>
               )}
             </div>
-            <Button 
-              className="w-full rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-medium h-11 gap-2"
-              onClick={() => window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""}`, "_blank")}
-            >
-              <MessageCircle className="h-4 w-4" />
-              Contactar por WhatsApp
-            </Button>
             <div className="flex items-center justify-center">
               <ThemeToggle />
             </div>
