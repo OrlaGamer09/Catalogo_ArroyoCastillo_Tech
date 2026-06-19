@@ -7,6 +7,7 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, Share2, MessageCircle, Check, ChevronRight } from "lucide-react"
 import ThemeToggle from '@/components/theme-toggle'
 import { Button } from "@/components/ui/button"
+import { ReviewsSection } from "@/components/reviews/reviews-section"
 import { getProductById, products } from "@/lib/products"
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -202,6 +203,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             </div>
           </div>
         </section>
+
+        {/* Reviews */}
+        <ReviewsSection productId={product.id} />
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
