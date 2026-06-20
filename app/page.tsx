@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import Image from "next/image"
 import { ProductCard } from "@/components/product-card"
 import { CatalogHeader } from "@/components/catalog-header"
 import { CategoryFilter } from "@/components/category-filter"
