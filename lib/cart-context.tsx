@@ -1,12 +1,16 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
+import { getProductById } from "@/lib/products"
+
+const CHARGER_CABLE_BUNDLE_DISCOUNT = 10000
 
 export interface CartItem {
   id: number
   name: string
   price: number
   quantity: number
+  image: string
   variantLabel?: string
 }
 
@@ -20,6 +24,8 @@ interface CartContextValue {
   updateQuantity: (id: number, quantity: number, variantLabel?: string) => void
   clearCart: () => void
   totalItems: number
+  subtotal: number
+  bundleDiscount: number
   totalPrice: number
 }
 
@@ -80,7 +86,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = () => setItems([])
 
   const totalItems = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items])
-  const totalPrice = useMemo(() => items.reduce((sum, i) => sum + i.quantity * i.price, 0), [items])
+  const subtotal = useMemo(() => items.reduce((sum, i) => sum + i.quantity * i.price, 0), [items])
+
+  const bundleDiscount = useMemo(() => {
+    let chargerQty = 0
+    let cableQty = 0
+    for (const item of items) {
+      const product = getProductById(item.id)
+      if (!product) continue
+      if (product.category === "Cargadores" && !product.excludeFromBundleDiscount) {
+        chargerQty += item.quantity
+      } else if (product.category === "Cables") {
+        cableQty += item.quantity
+      }
+    }
+    const pairs = Math.min(chargerQty, cableQty)
+    return pairs * CHARGER_CABLE_BUNDLE_DISCOUNT
+  }, [items])
+
+  const totalPrice = Math.max(subtotal - bundleDiscount, 0)
 
   return (
     <CartContext.Provider
@@ -94,6 +118,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         clearCart,
         totalItems,
+        subtotal,
+        bundleDiscount,
         totalPrice,
       }}
     >

@@ -17,7 +17,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const addToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    addItem({ id: product.id, name: product.name, price: product.price })
+    addItem({ id: product.id, name: product.name, price: product.price, image: product.image })
   }
 
   const shareProduct = (e: React.MouseEvent) => {
