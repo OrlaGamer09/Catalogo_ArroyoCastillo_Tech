@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseToProduct, type SupabaseProduct } from '@/lib/products'
 
@@ -72,6 +73,9 @@ export async function POST(request: NextRequest) {
 
     // Convertir respuesta al tipo de app
     const convertedProduct = supabaseToProduct(data?.[0])
+
+    // Revalidate catalog
+    revalidateTag('products')
 
     return NextResponse.json(convertedProduct, { status: 201 })
   } catch (error) {

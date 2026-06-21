@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Search, Menu, X } from "lucide-react"
+import { Search, Menu, X, Settings } from "lucide-react"
+import Link from "next/link"
 import ThemeToggle from "@/components/theme-toggle"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface CatalogHeaderProps {
   searchQuery: string
@@ -15,6 +17,22 @@ interface CatalogHeaderProps {
 export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchFocused, setSearchFocused] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const res = await fetch('/api/auth/check')
+        const data = await res.json()
+        setIsAdmin(data.isAdmin)
+      } catch (error) {
+        setIsAdmin(false)
+      }
+    }
+
+    checkAdmin()
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-sm">
@@ -65,8 +83,23 @@ export function CatalogHeader({ searchQuery, onSearchChange }: CatalogHeaderProp
             </div>
           </div>
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle + Admin Icon */}
           <div className="hidden md:flex items-center gap-3">
+            {isAdmin && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href="/admin"
+                      className="inline-flex items-center justify-center h-10 w-10 rounded-lg hover:bg-secondary transition-colors duration-200"
+                    >
+                      <Settings className="h-5 w-5 text-foreground" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>Panel de administración</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             <ThemeToggle />
           </div>
 
