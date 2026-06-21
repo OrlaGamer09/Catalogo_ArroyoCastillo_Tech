@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseToProduct, type SupabaseProduct } from '@/lib/products'
 
 const ADMIN_EMAIL_1 = process.env.NEXT_PUBLIC_ADMIN_EMAIL1
 const ADMIN_EMAIL_2 = process.env.NEXT_PUBLIC_ADMIN_EMAIL2
@@ -26,7 +27,10 @@ export async function GET() {
 
     if (error) throw error
 
-    return NextResponse.json(data || [])
+    // Convertir tipos
+    const products = (data || []).map((p: SupabaseProduct) => supabaseToProduct(p))
+
+    return NextResponse.json(products)
   } catch (error) {
     console.error('Error fetching products:', error)
     return NextResponse.json({ error: 'Error al obtener productos' }, { status: 500 })
@@ -46,18 +50,30 @@ export async function POST(request: NextRequest) {
   try {
     const product = await request.json()
 
+    // Convertir nombres de app a nombres de Supabase
+    const dbProduct = {
+      ...product,
+      full_description: product.fullDescription,
+      exclude_from_bundle_discount: product.excludeFromBundleDiscount,
+      created_by: user.id,
+      updated_by: user.id
+    }
+
+    // Remover campos de app que no existen en Supabase
+    delete dbProduct.fullDescription
+    delete dbProduct.excludeFromBundleDiscount
+
     const { data, error } = await supabase
       .from('products')
-      .insert({
-        ...product,
-        created_by: user.id,
-        updated_by: user.id
-      })
+      .insert(dbProduct)
       .select()
 
     if (error) throw error
 
-    return NextResponse.json(data?.[0], { status: 201 })
+    // Convertir respuesta al tipo de app
+    const convertedProduct = supabaseToProduct(data?.[0])
+
+    return NextResponse.json(convertedProduct, { status: 201 })
   } catch (error) {
     console.error('Error creating product:', error)
     return NextResponse.json(

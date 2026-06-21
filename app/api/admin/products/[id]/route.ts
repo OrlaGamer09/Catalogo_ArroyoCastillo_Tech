@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseToProduct, type SupabaseProduct } from '@/lib/products'
 
 const ADMIN_EMAIL_1 = process.env.NEXT_PUBLIC_ADMIN_EMAIL1
 const ADMIN_EMAIL_2 = process.env.NEXT_PUBLIC_ADMIN_EMAIL2
@@ -26,10 +27,21 @@ export async function PUT(
     const updates = await request.json()
     const productId = BigInt(id)
 
+    // Convertir nombres de app a nombres de Supabase
+    const dbUpdates = { ...updates }
+    if (updates.fullDescription) {
+      dbUpdates.full_description = updates.fullDescription
+      delete dbUpdates.fullDescription
+    }
+    if (updates.excludeFromBundleDiscount !== undefined) {
+      dbUpdates.exclude_from_bundle_discount = updates.excludeFromBundleDiscount
+      delete dbUpdates.excludeFromBundleDiscount
+    }
+
     const { data, error } = await supabase
       .from('products')
       .update({
-        ...updates,
+        ...dbUpdates,
         updated_by: user.id,
         updated_at: new Date().toISOString()
       })
@@ -50,7 +62,10 @@ export async function PUT(
       changed_by: user.id
     })
 
-    return NextResponse.json(data[0])
+    // Convertir respuesta
+    const convertedProduct = supabaseToProduct(data[0] as SupabaseProduct)
+
+    return NextResponse.json(convertedProduct)
   } catch (error) {
     console.error('Error updating product:', error)
     return NextResponse.json(

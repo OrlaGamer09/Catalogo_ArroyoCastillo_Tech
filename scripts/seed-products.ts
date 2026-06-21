@@ -5,13 +5,15 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+// Productos para insertar en Supabase
+// Las imágenes se sirven desde /public por ahora
 const productsToInsert = [
   {
     id: 1,
     name: 'Cargador UGREEN Uno v2.0 30W GaN',
     price: 100000,
     category: 'Cargadores',
-    image: '/robotGaN2.png',
+    image: '/robotGaN2.png',  // Local por ahora, cambiar a Blob URL después
     description: 'Cargador USB-C compacto de 30W con tecnología GaN Nexode Robot. Carga rápida para iPhone, Samsung Galaxy, Pixel y más.',
     full_description: 'El UGREEN Uno Charger de 30W es la solución ideal para quienes buscan potencia sin sacrificar espacio. Gracias a la tecnología Nexode Robot GaN, este cargador logra entregar 30W de carga rápida en un bloque notablemente más compacto que los cargadores tradicionales. Compatible con una amplia gama de dispositivos: iPhone 15/14/13, Samsung Galaxy S24/S23/S22, Google Pixel 7/8 y cualquier dispositivo con carga USB-C. Perfecto para el hogar, la oficina o como compañero de viaje.',
     specs: [

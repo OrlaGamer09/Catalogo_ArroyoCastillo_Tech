@@ -1,16 +1,40 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import Image from "next/image"
 import { ProductCard } from "@/components/product-card"
 import { CatalogHeader } from "@/components/catalog-header"
 import { CategoryFilter } from "@/components/category-filter"
 import { ArrowRight, MessageCircle, Zap, Shield, Truck } from "lucide-react"
-import { products, categories } from "@/lib/products"
+import type { Product } from "@/lib/products"
 
 export default function CatalogPage() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  // Cargar productos desde Supabase
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        const res = await fetch('/api/products')
+        if (!res.ok) throw new Error('Error al cargar productos')
+        const data = await res.json()
+        setProducts(data)
+      } catch (error) {
+        console.error('Error:', error)
+        setProducts([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  const categories = [...new Set(products.map((p) => p.category))]
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -19,7 +43,7 @@ export default function CatalogPage() {
       const matchesCategory = !selectedCategory || product.category === selectedCategory
       return matchesSearch && matchesCategory
     })
-  }, [searchQuery, selectedCategory])
+  }, [searchQuery, selectedCategory, products])
 
   const contactStore = () => {
     const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""
@@ -135,7 +159,14 @@ export default function CatalogPage() {
         </div>
 
         {/* Products Grid */}
-        {filteredProducts.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-24">
+            <div className="inline-block">
+              <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+              <p className="text-muted-foreground mt-4">Cargando productos...</p>
+            </div>
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
