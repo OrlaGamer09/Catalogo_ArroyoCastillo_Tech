@@ -4,6 +4,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { CartProvider } from '@/lib/cart-context'
+import { FloatingCartButton } from '@/components/floating-cart-button'
+import { CartSheet } from '@/components/cart-sheet'
 
 const playfair = Playfair_Display({ 
   subsets: ["latin"],
@@ -40,8 +43,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${playfair.variable} ${inter.variable} ${poppins.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          {children}
-          <Toaster />
+          <CartProvider>
+            {children}
+            <FloatingCartButton />
+            <CartSheet />
+            <Toaster />
+          </CartProvider>
         </ThemeProvider>
         <Analytics />
       </body>

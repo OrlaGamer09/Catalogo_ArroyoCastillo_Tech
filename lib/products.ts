@@ -19,6 +19,7 @@ export interface Product {
   specs: ProductSpec[]
   features: string[]
   variants?: ProductVariant[]
+  excludeFromBundleDiscount?: boolean
 }
 
 export const products: Product[] = [
@@ -81,6 +82,7 @@ export const products: Product[] = [
   name: "Cargador de Carro UGREEN 30W USB-C PD + USB-A QC",
   price: 55000,
   category: "Cargadores",
+  excludeFromBundleDiscount: true,
   image: "/CargadorCarro30W.png", // reemplaza con el nombre real
   description: "Cargador de carro de 30W con puerto USB-C PD y USB-A QC. Carga 2 dispositivos simultáneamente con carga rápida en movimiento.",
   fullDescription: "El Cargador de Carro UGREEN de 30W es la solución perfecta para mantener tus dispositivos cargados mientras estás en la carretera. Con un puerto USB-C Power Delivery y un puerto USB-A Quick Charge, puedes cargar dos dispositivos a la vez de forma rápida y eficiente. Su diseño compacto y minimalista se adapta a cualquier puerto de encendedor de vehículo sin estorbar, y sus múltiples protecciones integradas garantizan una carga segura tanto para tus dispositivos como para el sistema eléctrico de tu vehículo.",
