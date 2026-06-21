@@ -103,7 +103,7 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
                       <div key={star} className="flex items-center gap-3">
                         <span className="w-3 text-xs text-muted-foreground">{star}</span>
                         <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
-                          <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+                          <div className="h-full rounded-full bg-amber-400" style={{ width: `${pct}%` }} />
                         </div>
                         <span className="w-6 text-right text-xs text-muted-foreground">
                           {stats.distribution[star]}

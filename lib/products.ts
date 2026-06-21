@@ -80,7 +80,7 @@ export const products: Product[] = [
 {
   id: 3,
   name: "Cargador de Carro UGREEN 30W USB-C PD + USB-A QC",
-  price: 55000,
+  price: 50000,
   category: "Cargadores",
   excludeFromBundleDiscount: true,
   image: "/CargadorCarro30W.png", // reemplaza con el nombre real
@@ -203,7 +203,7 @@ export const products: Product[] = [
 {
   id: 7,
   name: "Cable UGREEN UNO USB-C a USB-C 100W con Pantalla LED",
-  price: 50000,
+  price: 40000,
   category: "Cables",
   image: "/cable100W.png",
   description: "Cable USB-C trenzado de 100W con pantalla LED con expresión facial. Potencia máxima para laptops, tablets y smartphones de alta demanda.",
@@ -259,34 +259,6 @@ export const products: Product[] = [
     "Modo de suspensión automático tras 10 minutos de inactividad para ahorrar batería",
     "Botones laterales de avance/retroceso para mayor productividad",
     "Indicador de batería baja con luz roja parpadeante"
-  ]
-},
-
-{
-  id: 9,
-  name: "Soporte de Carro para Celular TOPK D40-C 360°",
-  price: 45000,
-  category: "Accesorios",
-  image: "/soporte.png", // reemplaza con el nombre real
-  description: "Soporte vehicular con base adhesiva para tablero, rotación 360° y capacidad de hasta 15 kg. Compatible con cualquier smartphone.",
-  fullDescription: "El soporte TOPK D40-C se instala firmemente en el tablero de tu vehículo mediante una base adhesiva de alta resistencia, sin necesidad de herramientas ni abrazaderas. Su articulación de 360° te permite ajustar el ángulo exacto que necesitas para ver el GPS, atender llamadas o controlar la música sin apartar la vista del camino. Soporta dispositivos de hasta 15 kg, lo que lo hace compatible con prácticamente cualquier smartphone del mercado, desde los más compactos hasta los modelos más grandes con funda. Su construcción en materiales resistentes garantiza estabilidad en carreteras con vibraciones sin que el teléfono se mueva ni caiga.",
-  specs: [
-    { label: "Marca", value: "TOPK" },
-    { label: "Modelo", value: "D40-C" },
-    { label: "Tipo de instalación", value: "Base adhesiva para tablero (salpicadero)" },
-    { label: "Rotación", value: "360°" },
-    { label: "Capacidad de carga", value: "Hasta 15 kg" },
-    { label: "Compatibilidad", value: "Smartphones iPhone y Android (todos los tamaños)" },
-    { label: "Material", value: "Resistente a vibraciones y temperatura" },
-    { label: "Herramientas para instalación", value: "No requeridas" }
-  ],
-  features: [
-    "Base adhesiva de alta resistencia: instalación fija sin abrazaderas ni tornillos",
-    "Rotación 360° para ajustar el ángulo perfecto en cualquier posición",
-    "Soporta hasta 15 kg — estable con cualquier smartphone y funda",
-    "Compatible con iPhone y toda la gama Android",
-    "Resistente a vibraciones en carretera: el teléfono no se mueve",
-    "Manos libres: ideal para GPS, llamadas y música mientras conduces"
   ]
 },
 
