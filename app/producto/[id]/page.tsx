@@ -4,16 +4,18 @@ import { use, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, Share2, MessageCircle, Check, ChevronRight } from "lucide-react"
+import { ArrowLeft, Share2, Check, ChevronRight, ShoppingCart } from "lucide-react"
 import ThemeToggle from '@/components/theme-toggle'
 import { Button } from "@/components/ui/button"
 import { ReviewsSection } from "@/components/reviews/reviews-section"
 import { getProductById, products } from "@/lib/products"
+import { useCart } from "@/lib/cart-context"
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const product = getProductById(parseInt(id))
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0)
+  const { addItem } = useCart()
 
   if (!product) {
     notFound()
@@ -26,6 +28,15 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   const selectedVariant = product.variants ? product.variants[selectedVariantIndex] : null
 
+  const addToCart = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: currentPrice,
+      variantLabel: selectedVariant?.size,
+    })
+  }
+
   const shareProduct = () => {
     let message = `Mira este producto de *AC Tech*:\n\n*${product.name}`
     if (selectedVariant) {
@@ -33,17 +44,6 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     }
     message += `*\n${product.description}\n\nPrecio: $${currentPrice.toLocaleString()}\n\nConsultalo aqui: ${typeof window !== "undefined" ? window.location.href : ""}`
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, "_blank")
-  }
-
-  const contactStore = () => {
-    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""
-    let message = `Hola, estoy interesado en este producto de *AC Tech*:\n\n*${product.name}`
-    if (selectedVariant) {
-      message += ` (${selectedVariant.size})`
-    }
-    message += `*\n${product.description}\n\nPrecio: $${currentPrice.toLocaleString()}\n\n¿Está disponible?`
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 
@@ -163,12 +163,12 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mb-8">
               <Button
-                onClick={contactStore}
+                onClick={addToCart}
                 size="lg"
                 className="w-full sm:flex-1 bg-primary hover:bg-primary/90 text-primary-foreground gap-2 h-11 text-base"
               >
-                <MessageCircle className="h-5 w-5" />
-                Consultar disponibilidad
+                <ShoppingCart className="h-5 w-5" />
+                Agregar al carrito
               </Button>
               <Button
                 onClick={shareProduct}

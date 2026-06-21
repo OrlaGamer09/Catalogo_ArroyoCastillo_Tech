@@ -2,8 +2,9 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Share2, MessageCircle } from "lucide-react"
+import { Share2, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useCart } from "@/lib/cart-context"
 import type { Product } from "@/lib/products"
 
 interface ProductCardProps {
@@ -11,20 +12,19 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addItem } = useCart()
+
+  const addToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addItem({ id: product.id, name: product.name, price: product.price })
+  }
+
   const shareProduct = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     const message = `Mira este producto de *AC Tech*:\n\n*${product.name}*\n${product.description}\n\nPrecio: $${product.price.toLocaleString()}\n\nConsultalo aqui: ${window.location.origin}/producto/${product.id}`
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, "_blank")
-  }
-
-  const contactStore = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""
-    const message = `Hola, estoy interesado en este producto de *AC Tech*:\n\n*${product.name}*\n${product.description}\n\nPrecio: $${product.price.toLocaleString()}\n\n¿Está disponible?`
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 
@@ -51,21 +51,11 @@ export function ProductCard({ product }: ProductCardProps) {
               variant="secondary"
               size="icon"
               onClick={shareProduct}
-              className="h-9 w-9 rounded-full bg-card/90 backdrop-blur-sm hover:bg-accent hover:text-accent-foreground transition-all duration-300 shadow-lg"
+              className="h-9 w-9 rounded-full bg-primary/90 backdrop-blur-sm hover:bg-primary text-primary-foreground transition-all duration-300 shadow-lg"
               aria-label={`Compartir ${product.name}`}
               title="Compartir con un amigo"
             >
               <Share2 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={contactStore}
-              className="h-9 w-9 rounded-full bg-primary/90 backdrop-blur-sm hover:bg-primary text-primary-foreground transition-all duration-300 shadow-lg"
-              aria-label={`Consultar por ${product.name}`}
-              title="Consultar disponibilidad"
-            >
-              <MessageCircle className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -92,9 +82,15 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="--font-poppins text-xl font-semibold text-foreground">
               ${product.price.toLocaleString()}
             </span>
-            <span className="text-xs text-muted-foreground tracking-wide uppercase">
-              Ver detalles
-            </span>
+            <Button
+              size="sm"
+              onClick={addToCart}
+              className="gap-1.5"
+              aria-label={`Agregar ${product.name} al carrito`}
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Agregar
+            </Button>
           </div>
         </div>
       </article>
