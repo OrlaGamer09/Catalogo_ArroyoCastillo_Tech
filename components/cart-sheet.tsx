@@ -356,12 +356,20 @@ export function CartSheet() {
                 <div className="overflow-x-auto rounded-lg border border-border">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                      <tr className="border-b border-border bg-secondary/40 text-xs uppercase tracking-wide text-muted-foreground">
                         <th className="w-8 px-2 py-3"></th>
-                        <th className="px-2 py-3">Producto</th>
-                        <th className="px-2 py-3">Precio</th>
-                        <th className="px-2 py-3">Cantidad</th>
-                        <th className="px-2 py-3 text-right">Subtotal</th>
+                        <th className="px-2 py-3">
+                          <span className="block text-center">Producto</span>
+                        </th>
+                        <th className="px-2 py-3">
+                          <span className="block text-center">Precio</span>
+                        </th>
+                        <th className="px-2 py-3">
+                          <span className="block text-center">Cantidad</span>
+                        </th>
+                        <th className="px-2 py-3">
+                          <span className="block text-center">Subtotal</span>
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -402,10 +410,12 @@ export function CartSheet() {
                             {formatCurrency(item.price)}
                           </td>
                           <td className="px-2 py-3 align-middle">
-                            <QuantityStepper
-                              item={item}
-                              onChange={(q) => updateQuantity(item.id, q, item.variantLabel)}
-                            />
+                            <div className="flex justify-center">
+                              <QuantityStepper
+                                item={item}
+                                onChange={(q) => updateQuantity(item.id, q, item.variantLabel)}
+                              />
+                            </div>
                           </td>
                           <td className="px-2 py-3 align-middle whitespace-nowrap text-right font-semibold text-foreground">
                             {formatCurrency(item.price * item.quantity)}

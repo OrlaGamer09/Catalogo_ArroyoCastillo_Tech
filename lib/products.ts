@@ -80,7 +80,7 @@ export const products: Product[] = [
 {
   id: 3,
   name: "Cargador de Carro UGREEN 30W USB-C PD + USB-A QC",
-  price: 55000,
+  price: 50000,
   category: "Cargadores",
   excludeFromBundleDiscount: true,
   image: "/CargadorCarro30W.png", // reemplaza con el nombre real
@@ -203,7 +203,7 @@ export const products: Product[] = [
 {
   id: 7,
   name: "Cable UGREEN UNO USB-C a USB-C 100W con Pantalla LED",
-  price: 50000,
+  price: 40000,
   category: "Cables",
   image: "/cable100W.png",
   description: "Cable USB-C trenzado de 100W con pantalla LED con expresión facial. Potencia máxima para laptops, tablets y smartphones de alta demanda.",

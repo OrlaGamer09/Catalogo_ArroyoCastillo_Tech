@@ -14,7 +14,7 @@ export function FloatingCartButton() {
     >
       <ShoppingCart className="h-6 w-6" />
       {totalItems > 0 && (
-        <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-xs font-semibold text-white">
+        <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[oklch(0.577_0.245_27.325)] px-1 text-xs font-semibold text-white">
           {totalItems > 99 ? "99+" : totalItems}
         </span>
       )}

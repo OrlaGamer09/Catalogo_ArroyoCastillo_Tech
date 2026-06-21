@@ -26,7 +26,7 @@ export function StarRating({ value, onChange, size = 16, className }: StarRating
             style={{ width: size, height: size }}
             className={cn(
               "transition-colors",
-              filled ? "fill-accent text-accent" : "fill-transparent text-muted-foreground/40",
+              filled ? "fill-amber-400 text-amber-400" : "fill-transparent text-muted-foreground/40",
             )}
           />
         )
