@@ -213,7 +213,7 @@ export default function AdminPage() {
                               activeStates[product.id.toString()] ?? true
                             )
                           }
-                          className="h-8 w-8 px-2"
+                          className="h-8 w-8 px-2 data-[state=on]:bg-blue-600 data-[state=on]:text-white"
                         >
                           {activeStates[product.id.toString()] ? '✓' : '✕'}
                         </Toggle>
