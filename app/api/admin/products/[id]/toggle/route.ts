@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { supabaseToProduct, type SupabaseProduct } from '@/lib/products'
-import { isAdmin } from '@/lib/admin'
 
 const ADMIN_EMAIL_1 = process.env.NEXT_PUBLIC_ADMIN_EMAIL1
 const ADMIN_EMAIL_2 = process.env.NEXT_PUBLIC_ADMIN_EMAIL2
@@ -12,42 +12,44 @@ function isAdminEmail(email: string | undefined): boolean {
 }
 
 export async function PATCH(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const supabase = await createClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const numericId = parseInt(id, 10)
+
+  // Verificar autenticación con el cliente anon (cookie-based)
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
 
   if (!user?.email || !isAdminEmail(user.email)) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
   }
 
+  // Operaciones de BD con service role (bypasa RLS)
+  const db = createAdminClient()
+
   try {
-    // Get current product
-    const { data: currentProduct, error: fetchError } = await supabase
+    const { data: current, error: fetchError } = await db
       .from('products')
       .select('is_active')
-      .eq('id', id)
+      .eq('id', numericId)
       .single()
 
-    if (fetchError || !currentProduct) {
+    if (fetchError || !current) {
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    // Toggle is_active
-    const newIsActive = !currentProduct.is_active
+    const newIsActive = !current.is_active
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('products')
       .update({
         is_active: newIsActive,
         updated_by: user.id,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
+      .eq('id', numericId)
       .select()
 
     if (error) throw error
@@ -56,20 +58,17 @@ export async function PATCH(
       return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
     }
 
-    // Log audit
-    await supabase.from('product_audit_log').insert({
-      product_id: id,
+    // Audit log — fire-and-forget (no bloquea la respuesta)
+    void db.from('product_audit_log').insert({
+      product_id: numericId,
       action: 'TOGGLE_STATUS',
       changed_fields: { is_active: newIsActive },
-      changed_by: user.id
+      changed_by: user.id,
     })
 
-    const convertedProduct = supabaseToProduct(data[0] as SupabaseProduct)
-    
-    // Revalidate catalog
-    revalidateTag('products')
-    
-    return NextResponse.json(convertedProduct)
+    revalidatePath('/')
+
+    return NextResponse.json(supabaseToProduct(data[0] as SupabaseProduct))
   } catch (error) {
     console.error('Error toggling product status:', error)
     return NextResponse.json(

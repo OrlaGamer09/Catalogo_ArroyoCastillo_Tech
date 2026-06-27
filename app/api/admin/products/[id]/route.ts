@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { supabaseToProduct, type SupabaseProduct } from '@/lib/products'
 
 const ADMIN_EMAIL_1 = process.env.NEXT_PUBLIC_ADMIN_EMAIL1
@@ -15,38 +16,39 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const supabase = await createClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const numericId = parseInt(id, 10)
+
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
 
   if (!user?.email || !isAdmin(user.email)) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
   }
 
+  const db = createAdminClient()
+
   try {
     const updates = await request.json()
-    const productId = BigInt(id)
 
-    // Convertir nombres de app a nombres de Supabase
-    const dbUpdates = { ...updates }
-    if (updates.fullDescription) {
-      dbUpdates.full_description = updates.fullDescription
-      delete dbUpdates.fullDescription
-    }
-    if (updates.excludeFromBundleDiscount !== undefined) {
-      dbUpdates.exclude_from_bundle_discount = updates.excludeFromBundleDiscount
-      delete dbUpdates.excludeFromBundleDiscount
+    const dbUpdates: Record<string, unknown> = {
+      name: updates.name,
+      price: updates.price,
+      category: updates.category,
+      description: updates.description,
+      full_description: updates.fullDescription,
+      image: updates.image,
+      specs: updates.specs,
+      features: updates.features,
+      variants: updates.variants ?? null,
+      exclude_from_bundle_discount: updates.excludeFromBundleDiscount ?? false,
+      updated_by: user.id,
+      updated_at: new Date().toISOString(),
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('products')
-      .update({
-        ...dbUpdates,
-        updated_by: user.id,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', productId.toString())
+      .update(dbUpdates)
+      .eq('id', numericId)
       .select()
 
     if (error) throw error
@@ -55,21 +57,15 @@ export async function PUT(
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    // Log audit
-    await supabase.from('product_audit_log').insert({
-      product_id: productId.toString(),
+    void db.from('product_audit_log').insert({
+      product_id: numericId,
       action: 'UPDATE',
       changed_fields: updates,
-      changed_by: user.id
+      changed_by: user.id,
     })
 
-    // Convertir respuesta
-    const convertedProduct = supabaseToProduct(data[0] as SupabaseProduct)
-
-    // Revalidate catalog
-    revalidateTag('products')
-
-    return NextResponse.json(convertedProduct)
+    revalidatePath('/')
+    return NextResponse.json(supabaseToProduct(data[0] as SupabaseProduct))
   } catch (error) {
     console.error('Error updating product:', error)
     return NextResponse.json(
@@ -80,31 +76,30 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const supabase = await createClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const numericId = parseInt(id, 10)
+
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
 
   if (!user?.email || !isAdmin(user.email)) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
   }
 
-  try {
-    const productId = BigInt(id)
+  const db = createAdminClient()
 
-    // Soft delete: marcar como inactivo
-    const { data, error } = await supabase
+  try {
+    const { data, error } = await db
       .from('products')
       .update({
         is_active: false,
         updated_by: user.id,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
-      .eq('id', productId.toString())
+      .eq('id', numericId)
       .select()
 
     if (error) throw error
@@ -113,14 +108,14 @@ export async function DELETE(
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    // Log audit
-    await supabase.from('product_audit_log').insert({
-      product_id: productId.toString(),
+    void db.from('product_audit_log').insert({
+      product_id: numericId,
       action: 'DELETE',
       changed_fields: { is_active: false },
-      changed_by: user.id
+      changed_by: user.id,
     })
 
+    revalidatePath('/')
     return NextResponse.json({ success: true, message: 'Producto marcado como inactivo' })
   } catch (error) {
     console.error('Error deleting product:', error)

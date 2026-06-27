@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { supabaseToProduct, type SupabaseProduct } from '@/lib/products'
 
 const ADMIN_EMAIL_1 = process.env.NEXT_PUBLIC_ADMIN_EMAIL1
@@ -11,26 +12,25 @@ function isAdmin(email: string | undefined): boolean {
 }
 
 export async function GET() {
-  const supabase = await createClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  // Verificar auth con cliente anon
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
 
   if (!user?.email || !isAdmin(user.email)) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
   }
 
   try {
-    const { data, error } = await supabase
+    // Service role: traer TODOS los productos (activos e inactivos) sin filtro de RLS
+    const db = createAdminClient()
+    const { data, error } = await db
       .from('products')
       .select('*')
       .order('id', { ascending: true })
 
     if (error) throw error
 
-    // Convertir tipos
     const products = (data || []).map((p: SupabaseProduct) => supabaseToProduct(p))
-
     return NextResponse.json(products)
   } catch (error) {
     console.error('Error fetching products:', error)
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     const convertedProduct = supabaseToProduct(data?.[0])
 
     // Revalidate catalog
-    revalidateTag('products')
+    revalidatePath('/')
 
     return NextResponse.json(convertedProduct, { status: 201 })
   } catch (error) {

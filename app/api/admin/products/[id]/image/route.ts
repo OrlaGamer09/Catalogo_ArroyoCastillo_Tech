@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { put } from '@vercel/blob'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { supabaseToProduct, type SupabaseProduct } from '@/lib/products'
 
 const ADMIN_EMAIL_1 = process.env.NEXT_PUBLIC_ADMIN_EMAIL1
@@ -48,15 +49,18 @@ export async function POST(
     const fileName = `products/${id}/${Date.now()}-${file.name}`
     const blob = await put(fileName, file, { access: 'public' })
 
+    const numericId = parseInt(id, 10)
+    const db = createAdminClient()
+
     // Update product with new image URL
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('products')
       .update({
         image: blob.url,
         updated_by: user.id,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
+      .eq('id', numericId)
       .select()
 
     if (error) throw error
@@ -65,18 +69,17 @@ export async function POST(
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    // Log audit
-    await supabase.from('product_audit_log').insert({
-      product_id: id,
+    // Audit log — fire-and-forget
+    void db.from('product_audit_log').insert({
+      product_id: numericId,
       action: 'UPDATE_IMAGE',
       changed_fields: { image: blob.url },
-      changed_by: user.id
+      changed_by: user.id,
     })
 
     const convertedProduct = supabaseToProduct(data[0] as SupabaseProduct)
 
-    // Revalidate catalog
-    revalidateTag('products')
+    revalidatePath('/')
 
     return NextResponse.json({
       imageUrl: blob.url,
