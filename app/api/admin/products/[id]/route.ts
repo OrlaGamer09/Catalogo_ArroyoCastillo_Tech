@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import { del, list } from '@vercel/blob'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { supabaseToProduct, type SupabaseProduct } from '@/lib/products'
@@ -92,31 +93,44 @@ export async function DELETE(
   const db = createAdminClient()
 
   try {
-    const { data, error } = await db
+    // Obtener imagen antes de eliminar
+    const { data: productData, error: fetchError } = await db
       .from('products')
-      .update({
-        is_active: false,
-        updated_by: user.id,
-        updated_at: new Date().toISOString(),
-      })
+      .select('image')
       .eq('id', numericId)
-      .select()
+      .single()
 
-    if (error) throw error
-
-    if (!data || data.length === 0) {
+    if (fetchError || !productData) {
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
+
+    // Borrar todas las imágenes del blob para este producto
+    try {
+      const { blobs } = await list({ prefix: `products/${id}/` })
+      if (blobs.length > 0) {
+        await del(blobs.map((b) => b.url))
+      }
+    } catch {
+      // No bloquear la eliminación si el blob falla
+    }
+
+    // Eliminar definitivamente de Supabase
+    const { error: deleteError } = await db
+      .from('products')
+      .delete()
+      .eq('id', numericId)
+
+    if (deleteError) throw deleteError
 
     void db.from('product_audit_log').insert({
       product_id: numericId,
       action: 'DELETE',
-      changed_fields: { is_active: false },
+      changed_fields: { deleted: true, image: productData.image },
       changed_by: user.id,
     })
 
     revalidatePath('/')
-    return NextResponse.json({ success: true, message: 'Producto marcado como inactivo' })
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting product:', error)
     return NextResponse.json(

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { ReviewsSection } from "@/components/reviews/reviews-section"
 import { useCart } from "@/lib/cart-context"
 import type { Product } from "@/lib/products"
+import { ProductImage } from "@/components/product-image"
 
 interface ProductDetailProps {
   product: Product
@@ -108,8 +109,8 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
               className="relative overflow-hidden rounded-2xl bg-secondary border border-border"
               style={{ aspectRatio: "4/3" }}
             >
-              <Image
-                src={product.image}
+              <ProductImage
+                image={product.image}
                 alt={product.name}
                 fill
                 className="object-cover"
@@ -262,8 +263,8 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
                   className="flex-none w-[calc(33.33%-8px)] snap-start group bg-card rounded-xl overflow-hidden border border-border active:scale-95 transition-transform duration-150"
                 >
                   <div className="aspect-square relative overflow-hidden bg-secondary">
-                    <Image
-                      src={related.image}
+                    <ProductImage
+                      image={related.image}
                       alt={related.name}
                       fill
                       className="object-cover"
@@ -290,8 +291,8 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
                   className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
                 >
                   <div className="aspect-video relative overflow-hidden bg-secondary">
-                    <Image
-                      src={related.image}
+                    <ProductImage
+                      image={related.image}
                       alt={related.name}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"

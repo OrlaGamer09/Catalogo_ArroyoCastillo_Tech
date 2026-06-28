@@ -26,12 +26,12 @@ import {
 } from '@/components/ui/collapsible'
 import { ChevronDown, Plus, X, Upload, Package } from 'lucide-react'
 import type { Product } from '@/lib/products'
-import Image from 'next/image'
+import { ProductImage } from '@/components/product-image'
 
 interface ProductEditSheetProps {
   product: Product | Partial<Product>
   isCreating: boolean
-  onSave: (product: Product) => void
+  onSave: (product: Product, pendingFile?: File) => void
   onClose: () => void
 }
 
@@ -62,6 +62,7 @@ export function ProductEditSheet({ product, isCreating, onSave, onClose }: Produ
   const [saving, setSaving] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(image || null)
   const [uploading, setUploading] = useState(false)
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
 
   const categories = ['Cargadores', 'Cables', 'Periféricos']
 
@@ -91,7 +92,12 @@ export function ProductEditSheet({ product, isCreating, onSave, onClose }: Produ
     const reader = new FileReader()
     reader.onloadend = () => setImagePreview(reader.result as string)
     reader.readAsDataURL(file)
-    handleImageUpload(file)
+    if (isCreating || !product.id || product.id === 0) {
+      // Producto nuevo o duplicado: diferir la subida hasta después de crear el producto
+      setPendingFile(file)
+    } else {
+      handleImageUpload(file)
+    }
   }
 
   const handleAddSpec = () => {
@@ -134,7 +140,7 @@ export function ProductEditSheet({ product, isCreating, onSave, onClose }: Produ
       setSaving(true)
       const specsArray = Object.entries(specs).map(([label, value]) => ({ label, value }))
       onSave({
-        id: (product.id as number) || Date.now(),
+        id: (product.id as number) || 0,
         name,
         price: parseFloat(price),
         category: newCategory || category,
@@ -145,7 +151,7 @@ export function ProductEditSheet({ product, isCreating, onSave, onClose }: Produ
         features,
         variants: variants.length > 0 ? variants.map((v) => ({ size: v.label, price: v.price })) : undefined,
         excludeFromBundleDiscount: product.excludeFromBundleDiscount ?? false,
-      })
+      }, pendingFile ?? undefined)
     } finally {
       setSaving(false)
     }
@@ -194,7 +200,7 @@ export function ProductEditSheet({ product, isCreating, onSave, onClose }: Produ
                 <div className="flex gap-4 p-4">
                   {imagePreview ? (
                     <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border border-border bg-secondary">
-                      <Image src={imagePreview} alt="Preview" fill className="object-cover" />
+                      <ProductImage image={imagePreview} alt="Preview" fill className="object-cover" />
                     </div>
                   ) : (
                     <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-md border border-border bg-secondary">

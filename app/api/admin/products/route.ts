@@ -26,7 +26,7 @@ export async function GET() {
     const { data, error } = await db
       .from('products')
       .select('*')
-      .order('id', { ascending: true })
+      .order('display_order', { ascending: true })
 
     if (error) throw error
 
@@ -63,8 +63,28 @@ export async function POST(request: NextRequest) {
     // Remover campos de app que no existen en Supabase
     delete dbProduct.fullDescription
     delete dbProduct.excludeFromBundleDiscount
+    delete dbProduct.is_active
 
-    const { data, error } = await supabase
+    const db = createAdminClient()
+
+    // La tabla no tiene secuencia/DEFAULT en id: generar el siguiente manualmente
+    const { data: maxRow } = await db
+      .from('products')
+      .select('id, display_order')
+      .order('id', { ascending: false })
+      .limit(1)
+    const nextId = ((maxRow?.[0]?.id as number) || 0) + 1
+    dbProduct.id = nextId
+
+    // display_order: poner al final de la lista
+    const { data: maxOrderRow } = await db
+      .from('products')
+      .select('display_order')
+      .order('display_order', { ascending: false })
+      .limit(1)
+    dbProduct.display_order = ((maxOrderRow?.[0]?.display_order as number) || 0) + 1
+
+    const { data, error } = await db
       .from('products')
       .insert(dbProduct)
       .select()
