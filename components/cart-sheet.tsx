@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 import Link from "next/link"
+import { ProductImage } from "@/components/product-image"
 import { Minus, Plus, X, ShoppingCart } from "lucide-react"
 import {
   Sheet,
@@ -220,7 +220,7 @@ export function CartSheet() {
             <p className="text-sm text-muted-foreground">
               Tu carrito está vacío. Agrega productos desde el catálogo.
             </p>
-            <Button onClick={closeCart} variant="outline" className="hover:bg-secondary hover:text-foreground">
+            <Button onClick={closeCart} variant="ghost" className="text-muted-foreground hover:bg-secondary hover:text-foreground">
               Volver a la tienda
             </Button>
           </div>
@@ -245,7 +245,7 @@ export function CartSheet() {
                           onClick={closeCart}
                           className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md border border-border bg-secondary"
                         >
-                          <Image src={item.image} alt={item.name} fill className="object-cover" />
+                          <ProductImage image={item.image} alt={item.name} fill className="object-cover" />
                         </Link>
 
                         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -307,8 +307,8 @@ export function CartSheet() {
                     </Button>
                     <Button
                       onClick={closeCart}
-                      variant="outline"
-                      className="w-full hover:bg-secondary hover:text-foreground"
+                      variant="ghost"
+                      className="w-full text-muted-foreground hover:bg-secondary hover:text-foreground"
                     >
                       Volver a la tienda
                     </Button>
@@ -394,7 +394,7 @@ export function CartSheet() {
                               className="flex items-center gap-3 min-w-45"
                             >
                               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border border-border bg-secondary">
-                                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                <ProductImage image={item.image} alt={item.name} fill className="object-cover" />
                               </div>
                               <div className="min-w-0">
                                 <span className="line-clamp-2 text-sm font-medium text-foreground hover:underline">
@@ -429,8 +429,8 @@ export function CartSheet() {
                 <div className="flex items-center justify-between">
                   <Button
                     onClick={closeCart}
-                    variant="outline"
-                    className="hover:bg-secondary hover:text-foreground"
+                    variant="ghost"
+                    className="text-muted-foreground hover:bg-secondary hover:text-foreground"
                   >
                     Volver a la tienda
                   </Button>
