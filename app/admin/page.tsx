@@ -1,15 +1,34 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, type ReactNode } from 'react'
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Plus, ArrowLeft, CheckCircle2, XCircle, Loader2,
-  Search, X, ArrowUpDown, ArrowUp, ArrowDown,
+  Search, X, ArrowUpDown, ArrowUp, ArrowDown, Copy, Trash2, Check,
+  GripVertical, Pencil,
 } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 import type { Product } from '@/lib/products'
+import { ProductImage } from '@/components/product-image'
 import { ProductEditSheet } from '@/components/admin/product-edit-sheet'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
@@ -23,12 +42,21 @@ export default function AdminPage() {
   const [isCreating, setIsCreating] = useState(false)
   const [activeStates, setActiveStates] = useState<Record<string, boolean>>({})
   const [togglingIds, setTogglingIds] = useState<Set<string>>(new Set())
+  const [savingOrder, setSavingOrder] = useState(false)
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null)
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null)
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set())
 
   // Filtros
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [priceSort, setPriceSort] = useState<PriceSort>('none')
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -84,6 +112,8 @@ export default function AdminPage() {
       result = [...result].sort((a, b) => a.price - b.price)
     } else if (priceSort === 'desc') {
       result = [...result].sort((a, b) => b.price - a.price)
+    } else {
+      result = [...result].sort((a, b) => (a.display_order ?? 9999) - (b.display_order ?? 9999))
     }
 
     return result
@@ -100,6 +130,61 @@ export default function AdminPage() {
     setCategoryFilter(null)
     setStatusFilter('all')
     setPriceSort('none')
+  }
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const product = filteredProducts.find((p) => p.id.toString() === event.active.id)
+    setActiveProduct(product ?? null)
+  }
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    setActiveProduct(null)
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = filteredProducts.findIndex((p) => p.id.toString() === active.id)
+    const newIndex = filteredProducts.findIndex((p) => p.id.toString() === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+
+    // Recoger los display_order actuales en el rango afectado
+    const minIdx = Math.min(oldIndex, newIndex)
+    const maxIdx = Math.max(oldIndex, newIndex)
+    const oldOrders = filteredProducts.slice(minIdx, maxIdx + 1).map((p) => p.display_order ?? p.id)
+
+    // Nueva posición de los productos tras el drag
+    const newArr = arrayMove(filteredProducts, oldIndex, newIndex)
+
+    // Asignar los valores de orden del rango anterior a las nuevas posiciones
+    const updates: { id: number; display_order: number }[] = []
+    for (let i = minIdx; i <= maxIdx; i++) {
+      updates.push({ id: newArr[i].id, display_order: oldOrders[i - minIdx] })
+    }
+
+    // Actualizar estado local de forma optimista
+    setProducts((prev) => {
+      const orderMap = new Map(updates.map((u) => [u.id, u.display_order]))
+      return prev.map((p) =>
+        orderMap.has(p.id) ? { ...p, display_order: orderMap.get(p.id) } : p
+      )
+    })
+
+    // Persistir en Supabase
+    setSavingOrder(true)
+    try {
+      await Promise.all(
+        updates.map(({ id, display_order }) =>
+          fetch(`/api/admin/products/${id}/order`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ display_order }),
+          })
+        )
+      )
+    } catch {
+      // silent — la UI optimista queda igual
+    } finally {
+      setSavingOrder(false)
+    }
   }
 
   const handleToggleActive = async (id: string, currentState: boolean) => {
@@ -131,7 +216,31 @@ export default function AdminPage() {
     }
   }
 
-  const handleSaveProduct = async (product: Product) => {
+  const handleDeleteProduct = async (id: string) => {
+    setDeletingIds((prev) => new Set(prev).add(id))
+    try {
+      const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setProducts((prev) => prev.filter((p) => p.id.toString() !== id))
+        setActiveStates((prev) => {
+          const next = { ...prev }
+          delete next[id]
+          return next
+        })
+        setConfirmingDeleteId(null)
+      }
+    } catch {
+      // silent
+    } finally {
+      setDeletingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
+      })
+    }
+  }
+
+  const handleSaveProduct = async (product: Product, pendingFile?: File) => {
     try {
       if (isCreating) {
         const res = await fetch('/api/admin/products', {
@@ -140,7 +249,21 @@ export default function AdminPage() {
           body: JSON.stringify(product),
         })
         if (!res.ok) throw new Error('Error al crear producto')
-        const newProduct = await res.json()
+        let newProduct = await res.json()
+
+        if (pendingFile) {
+          const formData = new FormData()
+          formData.append('file', pendingFile)
+          const imgRes = await fetch(`/api/admin/products/${newProduct.id}/image`, {
+            method: 'POST',
+            body: formData,
+          })
+          if (imgRes.ok) {
+            const { imageUrl, product: updatedProduct } = await imgRes.json()
+            newProduct = { ...newProduct, image: imageUrl, ...updatedProduct }
+          }
+        }
+
         setProducts((prev) => [...prev, newProduct])
         setActiveStates((prev) => ({ ...prev, [newProduct.id.toString()]: true }))
       } else {
@@ -201,7 +324,15 @@ export default function AdminPage() {
 
         {/* Title + New Product */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-semibold text-foreground">Productos</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-semibold text-foreground">Productos</h2>
+            {savingOrder && (
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Guardando orden…
+              </span>
+            )}
+          </div>
           <Button
             onClick={() => {
               setIsCreating(true)
@@ -256,10 +387,7 @@ export default function AdminPage() {
             <div className="space-y-1.5">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Categoría</p>
               <div className="flex flex-wrap gap-1.5">
-                <FilterPill
-                  active={categoryFilter === null}
-                  onClick={() => setCategoryFilter(null)}
-                >
+                <FilterPill active={categoryFilter === null} onClick={() => setCategoryFilter(null)}>
                   Todas
                 </FilterPill>
                 {categories.map((cat) => (
@@ -274,7 +402,6 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Separador */}
             <div className="hidden sm:block w-px self-stretch bg-border" />
 
             {/* Estado */}
@@ -295,7 +422,6 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Separador */}
             <div className="hidden sm:block w-px self-stretch bg-border" />
 
             {/* Precio */}
@@ -320,7 +446,7 @@ export default function AdminPage() {
           </div>
 
           {/* Row 3: result count */}
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground text-center">
             {filteredProducts.length === products.length
               ? `${products.length} productos en total`
               : `${filteredProducts.length} de ${products.length} productos`}
@@ -334,120 +460,195 @@ export default function AdminPage() {
         )}
 
         {/* Products Table */}
-        <div className="rounded-lg border border-border bg-card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted/50 border-b border-border">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Imagen</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Nombre</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Categoría</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Precio</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Estado</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filteredProducts.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-16 text-center text-muted-foreground text-sm">
-                      No hay productos que coincidan con los filtros aplicados.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredProducts.map((product) => {
-                    const id = product.id.toString()
-                    const isActive = activeStates[id] ?? true
-                    const isToggling = togglingIds.has(id)
-
-                    return (
-                      <tr
-                        key={product.id}
-                        className={`transition-colors duration-200 ${
-                          isActive
-                            ? 'hover:bg-muted/50'
-                            : 'bg-muted/20 opacity-60 hover:opacity-80 hover:bg-muted/30'
-                        }`}
-                      >
-                        <td className="px-6 py-4">
-                          <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-muted">
-                            <Image
-                              src={product.image}
-                              alt={product.name}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm font-medium text-foreground">{product.name}</div>
-                          <div className="text-xs text-muted-foreground line-clamp-1">{product.description}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-foreground">{product.category}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm font-semibold text-foreground">
-                            ${product.price.toLocaleString('es-CO')}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <button
-                            onClick={() => handleToggleActive(id, isActive)}
-                            disabled={isToggling}
-                            title={isActive ? 'Activo — clic para desactivar' : 'Inactivo — clic para activar'}
-                            className="flex items-center gap-1.5 group disabled:cursor-not-allowed"
-                          >
-                            {isToggling ? (
-                              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                            ) : isActive ? (
-                              <CheckCircle2 className="h-5 w-5 text-emerald-500 group-hover:text-emerald-400 transition-colors" />
-                            ) : (
-                              <XCircle className="h-5 w-5 text-red-400 group-hover:text-red-500 transition-colors" />
-                            )}
-                            <span
-                              className={`text-xs font-medium transition-colors ${
-                                isToggling
-                                  ? 'text-muted-foreground'
-                                  : isActive
-                                  ? 'text-emerald-600 group-hover:text-emerald-500'
-                                  : 'text-red-400 group-hover:text-red-500'
-                              }`}
-                            >
-                              {isToggling ? '…' : isActive ? 'Activo' : 'Inactivo'}
-                            </span>
-                          </button>
-                        </td>
-                        <td className="px-6 py-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setIsCreating(false)
-                              setEditingProduct(product)
-                            }}
-                            className="hidden md:inline-flex hover:bg-secondary hover:text-foreground"
-                          >
-                            Editar
-                          </Button>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <SortableContext items={filteredProducts.map((p) => p.id.toString())} strategy={verticalListSortingStrategy}>
+            <div className="rounded-lg border border-border bg-card overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50 border-b border-border">
+                    <tr>
+                      <th className="px-4 py-4 w-12">
+                        {priceSort === 'none' && <GripVertical className="h-4 w-4 text-muted-foreground/40 mx-auto" />}
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Imagen</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Nombre</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Categoría</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Precio</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Estado</th>
+                      <th className="px-6 py-4 text-center text-sm font-semibold text-foreground">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredProducts.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-16 text-center text-muted-foreground text-sm">
+                          No hay productos que coincidan con los filtros aplicados.
                         </td>
                       </tr>
-                    )
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                    ) : (
+                      filteredProducts.map((product) => {
+                        const id = product.id.toString()
+                        const isActive = activeStates[id] ?? true
+                        const isToggling = togglingIds.has(id)
+
+                        return (
+                          <SortableRow
+                            key={id}
+                            id={id}
+                            className={`transition-colors duration-200 ${
+                              isActive
+                                ? 'hover:bg-muted/50'
+                                : 'bg-muted/20 opacity-60 hover:opacity-80 hover:bg-muted/30'
+                            }`}
+                          >
+                            {(dragHandleListeners) => (
+                              <>
+                                <td className="px-4 py-4 w-12">
+                                  {priceSort === 'none' ? (
+                                    <button
+                                      {...dragHandleListeners}
+                                      className="cursor-grab active:cursor-grabbing p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors touch-none"
+                                      title="Arrastrar para reordenar"
+                                    >
+                                      <GripVertical className="h-4 w-4" />
+                                    </button>
+                                  ) : (
+                                    <span className="block text-center text-xs text-muted-foreground/30">—</span>
+                                  )}
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-muted">
+                                    <ProductImage image={product.image} alt={product.name} fill className="object-cover" />
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="text-sm font-medium text-foreground">{product.name}</div>
+                                  <div className="text-xs text-muted-foreground line-clamp-1">{product.description}</div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="text-sm text-foreground">{product.category}</div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="text-sm font-semibold text-foreground">
+                                    ${product.price.toLocaleString('es-CO')}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <button
+                                    onClick={() => handleToggleActive(id, isActive)}
+                                    disabled={isToggling}
+                                    title={isActive ? 'Activo — clic para desactivar' : 'Inactivo — clic para activar'}
+                                    className="flex items-center gap-1.5 group disabled:cursor-not-allowed"
+                                  >
+                                    {isToggling ? (
+                                      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                    ) : isActive ? (
+                                      <CheckCircle2 className="h-5 w-5 text-emerald-500 group-hover:text-emerald-400 transition-colors" />
+                                    ) : (
+                                      <XCircle className="h-5 w-5 text-red-400 group-hover:text-red-500 transition-colors" />
+                                    )}
+                                    <span className={`text-xs font-medium transition-colors ${
+                                      isToggling ? 'text-muted-foreground'
+                                      : isActive ? 'text-emerald-600 group-hover:text-emerald-500'
+                                      : 'text-red-400 group-hover:text-red-500'
+                                    }`}>
+                                      {isToggling ? '…' : isActive ? 'Activo' : 'Inactivo'}
+                                    </span>
+                                  </button>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="hidden md:flex items-center justify-center gap-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => { setIsCreating(false); setEditingProduct(product) }}
+                                      className="gap-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary"
+                                    >
+                                      <Pencil className="h-3.5 w-3.5" />
+                                      Editar
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      title="Crear nuevo producto basado en este"
+                                      onClick={() => {
+                                        setIsCreating(true)
+                                        setEditingProduct({ ...product, id: 0, name: `${product.name} (copia)`, image: '', is_active: true })
+                                      }}
+                                      className="gap-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary"
+                                    >
+                                      <Copy className="h-3.5 w-3.5" />
+                                      Duplicar
+                                    </Button>
+                                    {confirmingDeleteId === id ? (
+                                      <div className="flex items-center gap-1">
+                                        <span className="text-xs text-destructive font-medium whitespace-nowrap">¿Eliminar?</span>
+                                        <button
+                                          onClick={() => handleDeleteProduct(id)}
+                                          disabled={deletingIds.has(id)}
+                                          title="Confirmar eliminación"
+                                          className="p-1 rounded text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
+                                        >
+                                          {deletingIds.has(id)
+                                            ? <Loader2 className="h-4 w-4 animate-spin" />
+                                            : <Check className="h-4 w-4" />}
+                                        </button>
+                                        <button
+                                          onClick={() => setConfirmingDeleteId(null)}
+                                          title="Cancelar"
+                                          className="p-1 rounded text-muted-foreground hover:bg-secondary transition-colors"
+                                        >
+                                          <X className="h-4 w-4" />
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setConfirmingDeleteId(id)}
+                                        className="gap-1.5 text-destructive/60 hover:text-destructive hover:bg-destructive/10"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        Eliminar
+                                      </Button>
+                                    )}
+                                  </div>
+                                </td>
+                              </>
+                            )}
+                          </SortableRow>
+                        )
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </SortableContext>
+          <DragOverlay dropAnimation={null}>
+            {activeProduct ? (
+              <div className="flex items-center gap-4 bg-card border border-primary shadow-2xl shadow-primary/10 rounded-xl px-4 py-3 cursor-grabbing opacity-95">
+                <GripVertical className="h-4 w-4 text-primary shrink-0" />
+                <div className="relative h-10 w-10 rounded-md overflow-hidden bg-muted shrink-0">
+                  <ProductImage image={activeProduct.image} alt={activeProduct.name} fill className="object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-foreground truncate">{activeProduct.name}</div>
+                  <div className="text-xs text-muted-foreground">{activeProduct.category}</div>
+                </div>
+                <div className="text-sm font-semibold text-foreground shrink-0">
+                  ${activeProduct.price.toLocaleString('es-CO')}
+                </div>
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
 
         {products.length === 0 && !loading && (
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-4">No hay productos aún</p>
             <Button
-              onClick={() => {
-                setIsCreating(true)
-                setEditingProduct({} as Product)
-              }}
+              onClick={() => { setIsCreating(true); setEditingProduct({} as Product) }}
               className="hidden md:inline-flex gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -462,17 +663,39 @@ export default function AdminPage() {
           product={editingProduct}
           isCreating={isCreating}
           onSave={handleSaveProduct}
-          onClose={() => {
-            setEditingProduct(null)
-            setIsCreating(false)
-          }}
+          onClose={() => { setEditingProduct(null); setIsCreating(false) }}
         />
       )}
     </div>
   )
 }
 
-/* ── Micro-componente ─────────────────────────────── */
+/* ── SortableRow ─────────────────────────────── */
+
+function SortableRow({
+  id,
+  className,
+  children,
+}: {
+  id: string
+  className?: string
+  children: (dragHandleListeners: Record<string, unknown> | undefined) => ReactNode
+}) {
+  const { attributes, listeners, setNodeRef, transition, isDragging } = useSortable({ id })
+
+  return (
+    <tr
+      ref={setNodeRef}
+      style={{ transition }}
+      {...attributes}
+      className={`${className ?? ''} ${isDragging ? 'opacity-0' : ''}`}
+    >
+      {children(listeners as Record<string, unknown> | undefined)}
+    </tr>
+  )
+}
+
+/* ── FilterPill ─────────────────────────────── */
 
 function FilterPill({
   active,
@@ -481,7 +704,7 @@ function FilterPill({
 }: {
   active: boolean
   onClick: () => void
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <button

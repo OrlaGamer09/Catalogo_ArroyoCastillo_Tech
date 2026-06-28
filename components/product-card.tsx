@@ -1,11 +1,11 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { Share2, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
 import type { Product } from "@/lib/products"
+import { ProductImage } from "@/components/product-image"
 
 interface ProductCardProps {
   product: Product
@@ -41,8 +41,8 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
         {/* Image */}
         <div className="aspect-square relative overflow-hidden bg-secondary">
-          <Image
-            src={product.image}
+          <ProductImage
+            image={product.image}
             alt={product.name}
             fill
             priority={priority}

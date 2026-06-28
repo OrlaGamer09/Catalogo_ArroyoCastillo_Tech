@@ -9,7 +9,7 @@ export default async function CatalogPage() {
     .from('products')
     .select('*')
     .eq('is_active', true)
-    .order('id', { ascending: true })
+    .order('display_order', { ascending: true })
 
   const products = (data || []).map((p) => supabaseToProduct(p as SupabaseProduct))
 

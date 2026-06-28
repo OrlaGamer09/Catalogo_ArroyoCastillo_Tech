@@ -45,18 +45,18 @@ export async function POST(
       return NextResponse.json({ error: 'Archivo demasiado grande' }, { status: 400 })
     }
 
-    // Upload to Vercel Blob
+    // Upload to Vercel Blob (private — served via /api/products/image proxy)
     const fileName = `products/${id}/${Date.now()}-${file.name}`
-    const blob = await put(fileName, file, { access: 'public' })
+    const blob = await put(fileName, file, { access: 'private' })
 
     const numericId = parseInt(id, 10)
     const db = createAdminClient()
 
-    // Update product with new image URL
+    // Store the pathname (not the URL) so the proxy can fetch it from private blob
     const { data, error } = await db
       .from('products')
       .update({
-        image: blob.url,
+        image: blob.pathname,
         updated_by: user.id,
         updated_at: new Date().toISOString(),
       })
@@ -73,7 +73,7 @@ export async function POST(
     void db.from('product_audit_log').insert({
       product_id: numericId,
       action: 'UPDATE_IMAGE',
-      changed_fields: { image: blob.url },
+      changed_fields: { image: blob.pathname },
       changed_by: user.id,
     })
 
@@ -82,7 +82,7 @@ export async function POST(
     revalidatePath('/')
 
     return NextResponse.json({
-      imageUrl: blob.url,
+      imageUrl: blob.pathname,
       product: convertedProduct
     })
   } catch (error) {
