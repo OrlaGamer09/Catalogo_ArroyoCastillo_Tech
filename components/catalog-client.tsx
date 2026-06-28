@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ProductCard } from '@/components/product-card'
 import { CategoryFilter } from '@/components/category-filter'
 import type { Product } from '@/lib/products'
@@ -11,7 +12,10 @@ interface CatalogClientProps {
 }
 
 export function CatalogClient({ initialProducts, searchQuery }: CatalogClientProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    searchParams.get('category')
+  )
 
   const categories = [...new Set(initialProducts.map((p) => p.category))]
 

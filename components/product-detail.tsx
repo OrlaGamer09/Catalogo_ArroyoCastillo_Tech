@@ -86,7 +86,7 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+        <nav className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground mb-8">
           <Link href="/" className="hover:text-foreground transition-colors">
             Inicio
           </Link>
@@ -100,6 +100,11 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
           <ChevronRight className="h-4 w-4" />
           <span className="text-foreground">{product.name}</span>
         </nav>
+
+        {/* Product Title — mobile only (desktop shows inside info column) */}
+        <h1 className="sm:hidden --font-poppins text-xl font-semibold text-foreground mb-4 text-center text-balance">
+          {product.name}
+        </h1>
 
         {/* Product Detail */}
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
@@ -125,19 +130,19 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
           {/* Info */}
           <div className="flex flex-col">
             <div className="mb-6">
-              <h1 className="--font-poppins text-3xl font-semibold text-foreground mb-4 text-balance">
+              <h1 className="hidden sm:block --font-poppins text-3xl font-semibold text-foreground mb-4 text-balance">
                 {product.name}
               </h1>
-              <p className="text-l text-muted-foreground leading-relaxed">{product.fullDescription}</p>
+              <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed text-justify sm:text-left">{product.fullDescription}</p>
             </div>
 
             {/* Price */}
             <div
-              className={`flex items-baseline gap-3 pb-6 border-b border-border ${
+              className={`flex items-baseline justify-center sm:justify-start gap-3 pb-6 border-b border-border ${
                 product.variants && product.variants.length > 0 ? "mb-8" : "mb-6"
               }`}
             >
-              <span className="--font-poppins text-3xl font-bold text-foreground">
+              <span className="--font-poppins text-xl sm:text-3xl font-bold text-foreground">
                 ${currentPrice.toLocaleString()}
               </span>
               <span className="text-sm text-muted-foreground">IVA incluido</span>
@@ -194,7 +199,7 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
 
         {/* Specs */}
         <section className="mt-12 lg:mt-16">
-          <h2 className="--font-poppins text-2xl font-semibold text-foreground mb-6">
+          <h2 className="--font-poppins text-xl sm:text-2xl font-semibold text-foreground mb-6 text-center sm:text-left">
             Especificaciones técnicas
           </h2>
           <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -206,8 +211,8 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
                     index % 2 === 0 ? "bg-secondary/30" : ""
                   } ${index < product.specs.length - 2 ? "border-b border-border" : ""}`}
                 >
-                  <span className="font-medium text-foreground text-md">{spec.label}</span>
-                  <span className="text-muted-foreground text-right text-md">{spec.value}</span>
+                  <span className="font-medium text-foreground text-sm">{spec.label}</span>
+                  <span className="text-muted-foreground text-right text-sm">{spec.value}</span>
                 </div>
               ))}
             </div>
@@ -299,8 +304,8 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">{related.name}</h3>
-                    <p className="--font-poppins text-base font-semibold text-foreground">
+                    <h3 className="text-sm sm:text-base font-bold text-foreground mb-1 line-clamp-1">{related.name}</h3>
+                    <p className="--font-poppins text-sm sm:text-base font-semibold text-foreground">
                       ${related.price.toLocaleString()}
                     </p>
                   </div>
