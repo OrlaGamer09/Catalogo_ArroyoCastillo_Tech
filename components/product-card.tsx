@@ -37,7 +37,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
   return (
     <Link href={`/producto/${product.id}`}>
-      <article className="group relative bg-card rounded-xl overflow-hidden border border-border transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 cursor-pointer h-full">
+      <article className="group relative bg-card rounded-xl overflow-hidden border border-border transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
 
         {/* Image */}
         <div className="aspect-square relative overflow-hidden bg-secondary">
@@ -71,7 +71,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-2.5 sm:p-5">
+        <div className="p-2.5 sm:p-5 flex flex-col flex-1">
           <h3 className="--font-poppins text-xs sm:text-base font-semibold text-foreground leading-tight line-clamp-2 mb-1 sm:mb-2">
             {product.name}
           </h3>
@@ -83,15 +83,15 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
           {/* Variant badge — hidden on mobile */}
           {product.variants && product.variants.length > 0 && (
-            <div className="hidden sm:inline-block mb-3 px-2 py-1 bg-accent/20 rounded-md">
-              <span className="text-xs font-medium text-accent-foreground">
+            <div className="hidden sm:inline-block self-start mb-3 px-2 py-1 bg-muted rounded-md">
+              <span className="text-xs font-medium text-muted-foreground">
                 {product.variants.length} tamaño{product.variants.length > 1 ? "s" : ""} disponible{product.variants.length > 1 ? "s" : ""}
               </span>
             </div>
           )}
 
           {/* Price + Add to cart */}
-          <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-border gap-1">
+          <div className="mt-auto flex items-center justify-between pt-2 sm:pt-3 border-t border-border gap-1">
             <span className="--font-poppins text-sm sm:text-lg font-bold text-foreground">
               ${product.price.toLocaleString()}
             </span>
