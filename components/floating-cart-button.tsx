@@ -1,10 +1,14 @@
 "use client"
 
 import { ShoppingCart } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { useCart } from "@/lib/cart-context"
 
 export function FloatingCartButton() {
   const { totalItems, openCart } = useCart()
+  const pathname = usePathname()
+
+  if (pathname?.startsWith("/admin")) return null
 
   return (
     <button

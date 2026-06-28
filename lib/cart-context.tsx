@@ -1,7 +1,6 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
-import { getProductById } from "@/lib/products"
 
 const CHARGER_CABLE_BUNDLE_DISCOUNT = 10000
 
@@ -12,6 +11,8 @@ export interface CartItem {
   quantity: number
   image: string
   variantLabel?: string
+  category?: string
+  excludeFromBundleDiscount?: boolean
 }
 
 interface CartContextValue {
@@ -92,11 +93,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     let chargerQty = 0
     let cableQty = 0
     for (const item of items) {
-      const product = getProductById(item.id)
-      if (!product) continue
-      if (product.category === "Cargadores" && !product.excludeFromBundleDiscount) {
+      if (item.category === "Cargadores" && !item.excludeFromBundleDiscount) {
         chargerQty += item.quantity
-      } else if (product.category === "Cables") {
+      } else if (item.category === "Cables") {
         cableQty += item.quantity
       }
     }

@@ -10,32 +10,34 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ categories, selectedCategory, onCategoryChange }: CategoryFilterProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <button
-        onClick={() => onCategoryChange(null)}
-        className={cn(
-          "px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
-          selectedCategory === null
-            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-            : "bg-secondary text-secondary-foreground hover:bg-muted"
-        )}
-      >
-        Todos
-      </button>
-      {categories.map((category) => (
+    <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex border-b border-border">
         <button
-          key={category}
-          onClick={() => onCategoryChange(category)}
+          onClick={() => onCategoryChange(null)}
           className={cn(
-            "px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
-            selectedCategory === category
-              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-              : "bg-secondary text-secondary-foreground hover:bg-muted"
+            "px-3 sm:px-5 pb-2.5 pt-1 text-sm whitespace-nowrap transition-all duration-200 border-b-2 -mb-px",
+            selectedCategory === null
+              ? "border-primary text-foreground font-semibold"
+              : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          {category}
+          Todos
         </button>
-      ))}
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => onCategoryChange(category)}
+            className={cn(
+              "px-3 sm:px-5 pb-2.5 pt-1 text-sm whitespace-nowrap transition-all duration-200 border-b-2 -mb-px",
+              selectedCategory === category
+                ? "border-primary text-foreground font-semibold"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
