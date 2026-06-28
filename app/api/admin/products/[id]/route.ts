@@ -114,6 +114,14 @@ export async function DELETE(
       // No bloquear la eliminación si el blob falla
     }
 
+    // Registrar log ANTES de borrar (el FK requiere que el producto exista)
+    await db.from('product_audit_log').insert({
+      product_id: numericId,
+      action: 'DELETE',
+      changed_fields: { deleted: true, image: productData.image },
+      changed_by: user.id,
+    })
+
     // Eliminar definitivamente de Supabase
     const { error: deleteError } = await db
       .from('products')
@@ -121,13 +129,6 @@ export async function DELETE(
       .eq('id', numericId)
 
     if (deleteError) throw deleteError
-
-    void db.from('product_audit_log').insert({
-      product_id: numericId,
-      action: 'DELETE',
-      changed_fields: { deleted: true, image: productData.image },
-      changed_by: user.id,
-    })
 
     revalidatePath('/')
     return NextResponse.json({ success: true })
