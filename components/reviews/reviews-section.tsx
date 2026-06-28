@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import useSWR from "swr"
-import { MessageSquare, Loader2 } from "lucide-react"
+import { MessageSquare, Loader2, LogOut } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -55,6 +55,12 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
     if (error) toast.error("No se pudo iniciar sesión con Google")
   }
 
+  const signOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.reload()
+  }
+
   const handleDelete = async () => {
     if (!confirmDelete) return
     setDeleting(true)
@@ -75,7 +81,7 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
 
   return (
     <section className="mt-16 lg:mt-24" id="reseñas">
-      <h2 className="--font-poppins text-2xl font-semibold text-foreground mb-6">Opiniones de clientes</h2>
+      <h2 className="--font-poppins text-xl sm:text-2xl font-semibold text-foreground mb-6 text-center sm:text-left">Opiniones de clientes</h2>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Summary */}
@@ -123,11 +129,27 @@ export function ReviewsSection({ productId }: ReviewsSectionProps) {
             )}
 
             {!userLoading && !showForm && (
-              <div className="mt-6">
+              <div className="mt-6 space-y-3">
                 {user ? (
-                  <Button className="w-full" onClick={() => setShowForm(true)}>
-                    {myReview ? "Editar mi reseña" : "Escribir una reseña"}
-                  </Button>
+                  <>
+                    <Button className="w-full" onClick={() => setShowForm(true)}>
+                      {myReview ? "Editar mi reseña" : "Escribir una reseña"}
+                    </Button>
+                    <div className="flex items-center gap-3 rounded-lg border border-border bg-secondary/50 px-3 py-2.5">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary uppercase">
+                        {user.email?.slice(0, 2)}
+                      </div>
+                      <span className="flex-1 truncate text-xs text-muted-foreground">{user.email}</span>
+                      <button
+                        onClick={signOut}
+                        title="Salir de cuenta"
+                        className="shrink-0 flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <LogOut className="h-3.5 w-3.5" />
+                        <span>Salir</span>
+                      </button>
+                    </div>
+                  </>
                 ) : (
                   <Button className="w-full gap-2 bg-transparent hover:bg-secondary hover:text-foreground" variant="outline" onClick={signIn}>
                     <GoogleIcon />
